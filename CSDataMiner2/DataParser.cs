@@ -16,7 +16,7 @@ namespace CSDataMiner2
         public string NullValue = "NaN";
         public int NumStudentsDroopped { get; set; }
 
-        public ViewSettings EdViewLocations = new ViewSettings(new Corner(5, 6), new Corner(5, 5));
+        public DataFileSettings EdViewLocations = new DataFileSettings(new Corner(5, 6), new Corner(5, 5));
 
         public DataParser (DataTable RawData)
         {
@@ -32,13 +32,11 @@ namespace CSDataMiner2
                         switch (RawData.Rows[j].ItemArray[i].ToString ())
                         {
                             case "Ethnicity":
-                                EdViewLocations.UpperLeft.x = i + 1;
-                                EdViewLocations.UpperLeft.y = j + 2;
+                                EdViewLocations.UpperLeft = new Corner(i + 1, j+2);
                                 break;
 
                             case "Raw Score":
-                                EdViewLocations.UpperRight.x = i - 1;
-                                EdViewLocations.UpperRight.y = j + 2;
+                                EdViewLocations.UpperRight = new Corner(i - 1, j + 2);
                                 break;
                         }
                     }
