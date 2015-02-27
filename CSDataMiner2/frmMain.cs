@@ -1,5 +1,5 @@
 ﻿/*
-VBDataMiner - Extract and analyze data from MS Excel(c) files.
+CSDataMiner - Extract and analyze data from MS Excel(c) files.
 Copyright (C) 2015 Chris Stefancik gutenvirt@gmail.com
 
 This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -36,12 +35,15 @@ namespace CSDataMiner2
             InitializeComponent();
             openFileDialog1.ShowDialog();
 
-            DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
+            DataConnection dcDataGet = new DataConnection(openFileDialog1.FileName);
             DataParser dpDataFormat = new DataParser(dcDataGet.RawData);
 
 
             //********************
             //testing.......
+
+            textBox1.Text += dpDataFormat.TestName;
+            textBox1.Text += Environment.NewLine;
 
             for (int i = 0; i < dpDataFormat.BinaryData.GetLength(1); i++)
             {
@@ -50,6 +52,18 @@ namespace CSDataMiner2
                     textBox1.Text += dpDataFormat.BinaryData[j, i] + " ";
                 }
                 textBox1.Text += Environment.NewLine;
+            }
+
+            textBox1.Text += Environment.NewLine;
+
+            for (int i = 0; i < dpDataFormat.AnswerKey.GetLength(0); i++)
+            {
+                textBox1.Text += dpDataFormat.Standards[i];
+                textBox1.Text += Environment.NewLine;
+            }
+            for (int i = 0; i < dpDataFormat.AnswerKey.GetLength(0); i++)
+            {
+                textBox1.Text += " " + dpDataFormat.AnswerKey[i];
             }
         }
     }

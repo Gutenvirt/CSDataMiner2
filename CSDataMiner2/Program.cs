@@ -1,5 +1,5 @@
 ﻿/*
-VBDataMiner - Extract and analyze data from MS Excel(c) files.
+CSDataMiner - Extract and analyze data from MS Excel(c) files.
 Copyright (C) 2015 Chris Stefancik gutenvirt@gmail.com
 
 This program is free software: you can redistribute it and/or modify

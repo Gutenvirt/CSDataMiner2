@@ -1,5 +1,5 @@
 ﻿/*
-VBDataMiner - Extract and analyze data from MS Excel(c) files.
+CSDataMiner - Extract and analyze data from MS Excel(c) files.
 Copyright (C) 2015 Chris Stefancik gutenvirt@gmail.com
 
 This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CSDataMiner2
 {
     //This is a data container becuase there needs to be a place to house locations within the datafile itself.
-    
+
     public class DataFileLocations
     {
         public int FirstDataRow { get; set; }
         public int FirstDataCol { get; set; }
         public int LastDataCol { get; set; }
 
-        public DataFileLocations (int firstDataRow, int firstDataCol, int lastDataCol)
+        public DataFileLocations(int firstDataRow, int firstDataCol, int lastDataCol)
         {
             FirstDataCol = firstDataCol;
             LastDataCol = lastDataCol;

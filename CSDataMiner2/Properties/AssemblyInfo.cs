@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CSDataMiner2")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("School District of Volusia County")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CSDataMiner2")]
-[assembly: AssemblyCopyright("Copyright © School District of Volusia County 2015")]
+[assembly: AssemblyCopyright("Copyright © Chris Stefancik 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
