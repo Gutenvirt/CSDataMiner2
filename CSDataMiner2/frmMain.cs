@@ -36,22 +36,20 @@ namespace CSDataMiner2
             InitializeComponent();
             openFileDialog1.ShowDialog();
 
-            DataConnection DataGetter = new DataConnection (openFileDialog1.FileName);
-            DataParser DataFormatter = new DataParser(DataGetter.RawData);
+            DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
+            DataParser dpDataFormat = new DataParser(dcDataGet.RawData);
 
-            Console.WriteLine(DataFormatter.BinaryData.GetUpperBound(0));
-            Console.WriteLine(DataFormatter.BinaryData.GetUpperBound(1));
 
-            for (int i = 0; i < DataFormatter.BinaryData.GetUpperBound(0); i++)
+            //********************
+            //testing.......
+
+            for (int i = 0; i < dpDataFormat.BinaryData.GetLength(1); i++)
             {
-                for (int j = 0; j < DataFormatter.BinaryData.GetUpperBound(1); j++)
+                for (int j = 0; j < dpDataFormat.BinaryData.GetLength(0); j++)
                 {
-                    textBox1.Text += DataFormatter.BinaryData[i, j].ToString() + "   ";
-                    if (i == DataFormatter.BinaryData.GetUpperBound(0))
-                    {
-                        textBox1.Text += Environment.NewLine;
-                    }
+                    textBox1.Text += dpDataFormat.BinaryData[j, i] + " ";
                 }
+                textBox1.Text += Environment.NewLine;
             }
         }
     }

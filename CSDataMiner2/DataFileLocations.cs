@@ -24,32 +24,21 @@ using System.Threading.Tasks;
 
 namespace CSDataMiner2
 {
-    public class DataFileSettings
+    //This is a data container becuase there needs to be a place to house locations within the datafile itself.
+    
+    public class DataFileLocations
     {
-        public Corner UpperRight { get; set; }
-        public Corner UpperLeft { get; set; }
+        public int FirstDataRow { get; set; }
+        public int FirstDataCol { get; set; }
+        public int LastDataCol { get; set; }
 
-        public DataFileSettings (Corner UpperRightCorner, Corner UpperLeftCorner)
+        public DataFileLocations (int firstDataRow, int firstDataCol, int lastDataCol)
         {
-            UpperRight = UpperRightCorner;
-            UpperLeft = UpperLeftCorner;
-        }
-    }
-
-    public struct Corner
-    {
-        public readonly int X;
-        public readonly int Y;
-
-        public Corner(int xInt, int yInt)
-        {
-            this.X = xInt;
-            this.Y = yInt;
-        }
-
-        public override string ToString()
-        {
-            return X.ToString() + "," + Y.ToString();
+            FirstDataCol = firstDataCol;
+            LastDataCol = lastDataCol;
+            FirstDataRow = firstDataRow;
+            //This is misleading, LastDataCol is actually a number that is subtracted from the final column since tests have a different number of question.
+            //TotalCol - LastDataCol = real data column.
         }
     }
 }

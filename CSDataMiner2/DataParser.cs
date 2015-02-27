@@ -27,71 +27,37 @@ namespace CSDataMiner2
 {
     class DataParser
     {
-        //public string[,] RawData { get; set; }
         public string[,] BinaryData {get; set;}
         public string[] Standards { get; set; }
-        public string Status { get; set; }
+        public string InportStatus { get; set; }
         public string TestName {get; set;}
-        public string NullValue = "NaN";
         public int NumStudentsDropped { get; set; }
 
-        public DataFileSettings EdViewLocations = new DataFileSettings(new Corner(5, 6), new Corner(5, 5));
+        public string NullValue = "NaN"; //unique enough not to get confused with other datapoints in the file <Not a Number>
+        
+        public DataFileLocations dflDataFileLoc = new DataFileLocations(5, 6, 5); //5,6,4
 
-        public DataParser (DataTable RawData)
+        public DataParser (DataTable InpData)
         {
-        try
+            TestName = InpData.Rows[0].ItemArray[6].ToString (); 
+
+
+
+            //Extract the data and store in a 2D array; although the initial import of data is a database, operations are much to slow.  We lose some overhead
+            //initially, but in the long run array ops are quick and efficient and overall speed up the processing.
+
+            BinaryData = new string[InpData.Columns.Count - dflDataFileLoc.LastDataCol, InpData.Rows.Count - dflDataFileLoc.FirstDataRow];
+            
+            for (int i = dflDataFileLoc.FirstDataCol; i < InpData.Columns.Count - dflDataFileLoc.LastDataCol; i++)
             {
-                TestName = RawData.Rows[0].ItemArray[6].ToString ();
-
-                for (int i = 0; i < RawData.Columns.Count; i++)
+                for (int j = dflDataFileLoc.FirstDataRow ; j < InpData.Rows.Count; j++)
                 {
-                    for (int j = 0; j < 8; j++)
+                    BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = InpData.Rows[j].ItemArray[i].ToString();
+                    if (BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow].Trim().Length < 1)
                     {
-                        switch (RawData.Rows[j].ItemArray[i].ToString())
-                        {
-                            case "Ethnicity":
-                                EdViewLocations.UpperLeft = new Corner(i, j);
-                                break;
-
-                            case "Raw Score":
-                                EdViewLocations.UpperRight = new Corner(i, j);
-                                break;
-                        }
+                        BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = NullValue;
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Status = e.ToString();
-            }
-
-
-            //**********************************
-            //parser to remove extra rows;
-
-
-            BinaryData = new string[RawData.Columns.Count, RawData.Rows.Count];
-            for (int i = 0; i < RawData.Columns.Count; i++)
-            {
-                for (int j = 0; j < RawData.Columns.Count; j++)
-                {
-                    try
-                    {
-                        if (DBNull.Value.Equals(RawData.Rows[i].ItemArray[j]) || RawData.Rows[i].ItemArray[j].ToString() == "")
-                        {
-                            BinaryData[i, j] = NullValue;
-                        }
-                        else
-                        {
-                            BinaryData[i, j] = RawData.Rows[i].ItemArray[j].ToString();
-                        }
-                    }
-                    catch
-                    {
-                        BinaryData[i, j] = NullValue;
-                    }
-                }
-
             }
         }
         }
