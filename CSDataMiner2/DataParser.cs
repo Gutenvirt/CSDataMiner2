@@ -26,53 +26,64 @@ namespace CSDataMiner2
 {
     class DataParser
     {
+        const string NullValue = "NaN"; //unique enough not to get confused with other datapoints in the file <Not a Number>
+
         public string[,] BinaryData { get; set; }
         public string[,] ChoiceData { get; set; }
+
         public string[] Standards { get; set; }
         public string[] AnswerKey { get; set; }
-        public string InportStatus { get; set; }
+        public string[] ItemType { get; set; }
+
         public string TestName { get; set; }
 
-        public string NullValue = "NaN"; //unique enough not to get confused with other datapoints in the file <Not a Number>
+        public DataFileLocations dfLoc = new DataFileLocations(5, 6, 5); //General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-        public DataFileLocations dflDataFileLoc = new DataFileLocations(5, 6, 5); //General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
-
-        public DataParser(DataTable InpData)
+        public DataParser(DataTable InpData, MethodOfDelete ParseOption)
         {
             TestName = InpData.Rows[0].ItemArray[6].ToString();
 
             //Extract the data and store in a 2D array; although the initial import of data is to a database, operations are much too slow to be useful.  Some overhead
             //is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
 
-            ChoiceData = new string[InpData.Columns.Count - dflDataFileLoc.LastDataCol, InpData.Rows.Count - dflDataFileLoc.FirstDataRow];
+            ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
             BinaryData = new string[ChoiceData.GetLength(0), ChoiceData.GetLength(1)];
             Standards = new string[BinaryData.GetLength(0)];
             AnswerKey = new string[BinaryData.GetLength(0)];
 
             //Pull the answer choice out
-            for (int i = dflDataFileLoc.FirstDataCol; i < InpData.Columns.Count - dflDataFileLoc.LastDataCol; i++)
+            for (int i = dfLoc.FirstDataCol; i < InpData.Columns.Count - dfLoc.LastDataCol; i++)
             {
-                Standards[i - dflDataFileLoc.FirstDataCol] = InpData.Rows[4].ItemArray[i].ToString();
-                for (int j = dflDataFileLoc.FirstDataRow; j < InpData.Rows.Count; j++)
+                Standards[i - dfLoc.FirstDataCol] = InpData.Rows[4].ItemArray[i].ToString();
+				//the standards are hardcoded @ row 4.
+
+                for (int j = dfLoc.FirstDataRow; j < InpData.Rows.Count; j++)
                 {
 
-                    ChoiceData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = InpData.Rows[j].ItemArray[i].ToString();
+                    ChoiceData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = InpData.Rows[j].ItemArray[i].ToString();
 
-                    if (ChoiceData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow].IndexOf("+") > -1)
+                    if (ChoiceData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow].IndexOf("+") > -1)
                     {
-                        BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = "1";
-                        AnswerKey[i - dflDataFileLoc.FirstDataCol] = ChoiceData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow].Replace("+", "");
+                        BinaryData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = "1";
+                        AnswerKey[i - dfLoc.FirstDataCol] = ChoiceData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow].Replace("+", "");
                     }
                     else
                     {
-                        if (ChoiceData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow].Trim().Length < 1)
+                        if (ChoiceData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow].Trim().Length < 1)
                         {
-                            ChoiceData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = NullValue;
-                            BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = NullValue;
+                            ChoiceData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = NullValue;
+                            if (ParseOption == MethodOfDelete.ZeroReplace)
+                            {
+                                BinaryData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = "0";
+                            }
+                            else
+                            {
+                                BinaryData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = NullValue;
+                            }
                         }
                         else
                         {
-                            BinaryData[i - dflDataFileLoc.FirstDataCol, j - dflDataFileLoc.FirstDataRow] = "0";
+                            BinaryData[i - dfLoc.FirstDataCol, j - dfLoc.FirstDataRow] = "0";
                         }
                     }
                 }
@@ -80,3 +91,5 @@ namespace CSDataMiner2
         }
     }
 }
+
+enum MethodOfDelete {Listwise, Pairwise, ZeroReplace}
