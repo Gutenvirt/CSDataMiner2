@@ -23,31 +23,31 @@ using System.IO;
 
 namespace CSDataMiner2
 {
-    class DataConnection
-    {
-        public DataTable RawData = new DataTable(Guid.NewGuid().ToString()); //Create a random table name, not required but makes it easier to handle datatables for later extensibility
-        public int NumberRows { get; set; }
-        public int NumberCols { get; set; }
-        public string ErrorString { get; set; }
+	class DataConnection
+	{
+		public DataTable RawData = new DataTable (Guid.NewGuid ().ToString ());
+		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
+		public int NumberRows { get; set; }
 
-        public DataConnection(string dbFilename)
-        {
-            try
-            {
-                //IMEX=1 poses a problem, but there are little options available.  It treats all data pulled as a string, so extra parsing is needed later on.
-                //Using the Office InterOps protocols are inherently dangerous and full of ambiguity when dealing with data, OLEDB is the only alternative.
-                //once the source data files are available in CSV, most of this will be legacy support for VERY specific cases.
+		public int NumberCols { get; set; }
 
-                OleDbDataAdapter _oleAdapter = new OleDbDataAdapter("SELECT * FROM [Sheet1$]", "provider=Microsoft.ACE.OLEDB.12.0; Data Source='" + dbFilename + "'; Extended Properties='Excel 12.0;IMEX=1;HDR=NO'");
-                _oleAdapter.Fill(RawData);
-                NumberCols = RawData.Columns.Count;
-                NumberRows = RawData.Rows.Count;
+		public string ErrorString { get; set; }
 
-            }
-            catch (IOException e)
-            {
-                ErrorString = e.ToString();
-            }
-        }
-    }
+		public DataConnection (string dbFilename)
+		{
+			try {
+				//IMEX=1 poses a problem, but there are little options available.  It treats all data pulled as a string, so extra parsing is needed later on.
+				//Using the Office InterOps protocols are inherently dangerous and full of ambiguity when dealing with data, OLEDB is the only alternative.
+				//once the source data files are available in CSV, most of this will be legacy support for VERY specific cases.
+
+				OleDbDataAdapter _oleAdapter = new OleDbDataAdapter ("SELECT * FROM [Sheet1$]", "provider=Microsoft.ACE.OLEDB.12.0; Data Source='" + dbFilename + "'; Extended Properties='Excel 12.0;IMEX=1;HDR=NO'");
+				_oleAdapter.Fill (RawData);
+				NumberCols = RawData.Columns.Count;
+				NumberRows = RawData.Rows.Count;
+
+			} catch (IOException e) {
+				ErrorString = e.ToString ();
+			}
+		}
+	}
 }

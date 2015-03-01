@@ -27,44 +27,41 @@ using System.Windows.Forms;
 
 namespace CSDataMiner2
 {
-    public partial class frmMain : Form
-    {
+	public partial class frmMain : Form
+	{
 
-        public frmMain()
-        {
-            InitializeComponent();
-            openFileDialog1.ShowDialog();
+		public frmMain ()
+		{
+			InitializeComponent ();
+			openFileDialog1.ShowDialog ();
 
-            DataConnection dcDataGet = new DataConnection(openFileDialog1.FileName);
-            DataParser dpDataFormat = new DataParser(dcDataGet.RawData);
+			DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
+			DataParser dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.ZeroReplace);
+			//ZeroReplace -> NaN is a replaced with a zero.
 
 
-            //********************
-            //testing.......
+			//********************
+			//testing.......
 
-            textBox1.Text += dpDataFormat.TestName;
-            textBox1.Text += Environment.NewLine;
+			textBox1.Text += dpDataFormat.TestName;
+			textBox1.Text += Environment.NewLine;
 
-            for (int i = 0; i < dpDataFormat.BinaryData.GetLength(1); i++)
-            {
-                for (int j = 0; j < dpDataFormat.BinaryData.GetLength(0); j++)
-                {
-                    textBox1.Text += dpDataFormat.BinaryData[j, i] + " ";
-                }
-                textBox1.Text += Environment.NewLine;
-            }
+			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (1); i++) {
+				for (int j = 0; j < dpDataFormat.BinaryData.GetLength (0); j++) {
+					textBox1.Text += dpDataFormat.BinaryData [j, i] + " ";
+				}
+				textBox1.Text += Environment.NewLine;
+			}
 
-            textBox1.Text += Environment.NewLine;
+			textBox1.Text += Environment.NewLine;
 
-            for (int i = 0; i < dpDataFormat.AnswerKey.GetLength(0); i++)
-            {
-                textBox1.Text += dpDataFormat.Standards[i];
-                textBox1.Text += Environment.NewLine;
-            }
-            for (int i = 0; i < dpDataFormat.AnswerKey.GetLength(0); i++)
-            {
-                textBox1.Text += " " + dpDataFormat.AnswerKey[i];
-            }
-        }
-    }
+			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
+				textBox1.Text += dpDataFormat.Standards [i];
+				textBox1.Text += Environment.NewLine;
+			}
+			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
+				textBox1.Text += " " + dpDataFormat.AnswerKey [i];
+			}
+		}
+	}
 }

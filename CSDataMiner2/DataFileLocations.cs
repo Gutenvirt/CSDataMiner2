@@ -16,28 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace CSDataMiner2
 {
-    //This is a data container becuase there needs to be a place to house locations within the datafile itself.
+	//This is a data container becuase there needs to be a place to house locations within the datafile itself.
 
-    public class DataFileLocations
-    {
-        public int FirstDataRow { get; set; }
-        public int FirstDataCol { get; set; }
-        public int LastDataCol { get; set; }
+	public class DataFileLocations
+	{
+		public int FirstDataRow { get; set; }
 
-        public DataFileLocations(int firstDataRow, int firstDataCol, int lastDataCol)
-        {
-            FirstDataCol = firstDataCol;
-            LastDataCol = lastDataCol;
-            FirstDataRow = firstDataRow;
-            //This is misleading, LastDataCol is actually a number that is subtracted from the final column since tests have a different number of question.
-            //TotalCol - LastDataCol = real data column.
-        }
-    }
+		public int FirstDataCol { get; set; }
+
+		public int LastDataCol { get; set; }
+
+		public DataFileLocations (int firstDataRow, int firstDataCol, int lastDataCol)
+		{
+			FirstDataCol = firstDataCol;
+			LastDataCol = lastDataCol;
+			FirstDataRow = firstDataRow;
+			//This is misleading, LastDataCol is actually a number that is subtracted from the final column since tests have a different number of question.
+			//TotalCol - LastDataCol = real data column.
+		}
+	}
 }
