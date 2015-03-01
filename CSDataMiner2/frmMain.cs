@@ -37,7 +37,9 @@ namespace CSDataMiner2
 
 			DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
 			DataParser dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.ZeroReplace);
-			//ZeroReplace -> NaN is a replaced with a zero.
+			//ListWise -> Removes the student from database if there is ANY omission found.
+			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
+			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
 
 
 			//********************

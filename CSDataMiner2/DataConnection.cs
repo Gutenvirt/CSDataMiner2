@@ -27,9 +27,6 @@ namespace CSDataMiner2
 	{
 		public DataTable RawData = new DataTable (Guid.NewGuid ().ToString ());
 		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
-		public int NumberRows { get; set; }
-
-		public int NumberCols { get; set; }
 
 		public string ErrorString { get; set; }
 
@@ -42,8 +39,6 @@ namespace CSDataMiner2
 
 				OleDbDataAdapter _oleAdapter = new OleDbDataAdapter ("SELECT * FROM [Sheet1$]", "provider=Microsoft.ACE.OLEDB.12.0; Data Source='" + dbFilename + "'; Extended Properties='Excel 12.0;IMEX=1;HDR=NO'");
 				_oleAdapter.Fill (RawData);
-				NumberCols = RawData.Columns.Count;
-				NumberRows = RawData.Rows.Count;
 
 			} catch (IOException e) {
 				ErrorString = e.ToString ();

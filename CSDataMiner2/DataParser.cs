@@ -17,9 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 
 namespace CSDataMiner2
@@ -47,6 +44,20 @@ namespace CSDataMiner2
 		public DataParser (DataTable InpData, MethodOfDelete ParseOption)
 		{
 			TestName = InpData.Rows [0].ItemArray [6].ToString ();
+
+			//Depending on the options, listwise deletions must be completed first since it changes the size of the datatable and
+			//ultimately the bounds of the CHOCIE and BINARY 2D array created later.
+			if (ParseOption == MethodOfDelete.Listwise) {
+				for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
+					for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
+						if (InpData.Rows [i].ItemArray [j] == DBNull.Value) {
+							InpData.Rows [i].Delete ();
+							break; //no need to continue iterating through a deleted row, break this loop and move to next one.
+						}
+					}
+				}
+				InpData.AcceptChanges (); 
+			}
 
 			//Extract the data and store in a 2D array; although the initial import of data is to a database, operations are much too slow to be useful.  Some overhead
 			//is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
