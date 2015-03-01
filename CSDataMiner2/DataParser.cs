@@ -23,7 +23,7 @@ namespace CSDataMiner2
 {
 	class DataParser
 	{
-		const string NullValue = "NaN";
+		const string NullValue = "N";
 		//unique enough not to get confused with other datapoints in the file <Not a Number>
 
 		public string[,] BinaryData { get; set; }
@@ -37,6 +37,8 @@ namespace CSDataMiner2
 		public string[] ItemType { get; set; }
 
 		public string TestName { get; set; }
+
+		public int NumberDroppedStudents { get; set; }
 
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
@@ -52,6 +54,7 @@ namespace CSDataMiner2
 					for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
 						if (InpData.Rows [i].ItemArray [j] == DBNull.Value) {
 							InpData.Rows [i].Delete ();
+							NumberDroppedStudents += 1;
 							break; //no need to continue iterating through a deleted row, break this loop and move to next one.
 						}
 					}
@@ -62,10 +65,10 @@ namespace CSDataMiner2
 			//Extract the data and store in a 2D array; although the initial import of data is to a database, operations are much too slow to be useful.  Some overhead
 			//is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
 
-			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
+			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
 			BinaryData = new string[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
 			Standards = new string[BinaryData.GetLength (0)];
-			AnswerKey = new string[BinaryData.GetLength (0)];
+			AnswerKey = new string[Standards.GetLength (0)];
 
 			//Pull the answer choice out
 			for (int i = 0; i < InpData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
@@ -89,6 +92,29 @@ namespace CSDataMiner2
 					}
 				}
 			}
+
+			ItemType = new string[AnswerKey.GetLength (0)]; 
+			for (int i = 0; i < ChoiceData.GetLength (0); i++) { 
+				string iType = "MC";
+				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
+					if (ChoiceData [i, j].IndexOf (",") > -1) {
+						iType = "MS";
+						break; //next column
+					}
+					decimal x;
+					bool isNumber = decimal.TryParse (ChoiceData [i, j], out x);
+
+					if (isNumber) {
+						if (ChoiceData [i, j].IndexOf ("-") > -1 | ChoiceData [i, j].IndexOf (".") > -1 | ChoiceData [i, j].IndexOf ("+") < 0) {
+							iType = "GR";
+							break;
+						} else {
+							iType = "CR";
+						}
+					}
+				}
+				ItemType [i] = iType; 
+			} 
 		}
 	}
 

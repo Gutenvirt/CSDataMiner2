@@ -36,7 +36,7 @@ namespace CSDataMiner2
 			openFileDialog1.ShowDialog ();
 
 			DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
-			DataParser dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.ZeroReplace);
+			DataParser dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
@@ -48,22 +48,24 @@ namespace CSDataMiner2
 			textBox1.Text += dpDataFormat.TestName;
 			textBox1.Text += Environment.NewLine;
 
+			/*  Add feature to display random 10 rows of data**********************
 			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (1); i++) {
 				for (int j = 0; j < dpDataFormat.BinaryData.GetLength (0); j++) {
 					textBox1.Text += dpDataFormat.BinaryData [j, i] + " ";
 				}
 				textBox1.Text += Environment.NewLine;
 			}
+			*/
 
 			textBox1.Text += Environment.NewLine;
 
 			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
-				textBox1.Text += dpDataFormat.Standards [i];
+				textBox1.Text += (i + 1) + " :\t" + dpDataFormat.AnswerKey [i] + "\t\t-> " + dpDataFormat.ItemType [i] + "\t @ " + dpDataFormat.Standards [i];
 				textBox1.Text += Environment.NewLine;
 			}
-			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
-				textBox1.Text += " " + dpDataFormat.AnswerKey [i];
-			}
+
+			textBox1.Text += Environment.NewLine;
+			textBox1.Text += dpDataFormat.NumberDroppedStudents; 
 		}
 	}
 }
