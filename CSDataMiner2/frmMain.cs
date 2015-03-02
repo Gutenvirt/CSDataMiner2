@@ -17,12 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CSDataMiner2
@@ -35,8 +29,9 @@ namespace CSDataMiner2
 			InitializeComponent ();
 			openFileDialog1.ShowDialog ();
 
-			DataConnection dcDataGet = new DataConnection (openFileDialog1.FileName);
-			DataParser dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
+			var dcDataGet = new DataConnection (openFileDialog1.FileName);
+			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
+			var daDataDesc = new DataAnalyzer (dpDataFormat.BinaryData);
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
@@ -60,12 +55,14 @@ namespace CSDataMiner2
 			textBox1.Text += Environment.NewLine;
 
 			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
-				textBox1.Text += (i + 1) + " :\t" + dpDataFormat.AnswerKey [i] + "\t\t-> " + dpDataFormat.ItemType [i] + "\t @ " + dpDataFormat.Standards [i];
+				textBox1.Text += (i + 1) + " :\t" + dpDataFormat.AnswerKey [i] + "\t-> " + dpDataFormat.ItemType [i] + "\t @ " + dpDataFormat.Standards [i] + "\t\t :: " + daDataDesc.GetPValues () [i].ToString ();
 				textBox1.Text += Environment.NewLine;
 			}
 
 			textBox1.Text += Environment.NewLine;
-			textBox1.Text += dpDataFormat.NumberDroppedStudents; 
+
+			foreach (string s in dpDataFormat.StatusReport.Split ('.'))
+				textBox1.Text += s + Environment.NewLine;
 		}
 	}
 }
