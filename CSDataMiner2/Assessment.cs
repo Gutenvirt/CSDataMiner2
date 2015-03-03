@@ -1,5 +1,5 @@
 ﻿//
-//  Program.cs
+//  Assessment.cs
 //
 //  Author:
 //       Christopher Stefancik <gutenvirt@gmail.com>
@@ -20,22 +20,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Windows.Forms;
 
 namespace CSDataMiner2
 {
-	static class Program
+	public class Assessment
 	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-
-		static void Main ()
+		public Assessment ()
 		{
-			Application.EnableVisualStyles ();
-			Application.SetCompatibleTextRenderingDefault (false);
-			Application.Run (new frmMain ());
 		}
 	}
 }
+

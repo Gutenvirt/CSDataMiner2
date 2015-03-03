@@ -1,20 +1,23 @@
-﻿/*
-CSDataMiner - Extract and analyze data from MS Excel(c) files.
-Copyright (C) 2015 Chris Stefancik gutenvirt@gmail.com
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>. 
-*/
+﻿//
+//  DataParser.cs
+//
+//  Author:
+//       Christopher Stefancik <gutenvirt@gmail.com>
+//
+//  Copyright (c) 2015 CD Stefancik
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Data;
@@ -100,8 +103,8 @@ namespace CSDataMiner2
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
-							ChoiceData [i, j] = NULLVALUE;
-							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NULLVALUE;
+							ChoiceData [i, j] = NullValue;
+							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NullValue;
 						} else {
 							BinaryData [i, j] = "0";
 						}
