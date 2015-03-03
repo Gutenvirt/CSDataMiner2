@@ -23,7 +23,7 @@ namespace CSDataMiner2
 {
 	class DataParser
 	{
-		public string NULL_VALUE = "NaN";
+		public string NullValue = "NaN";
 
 		public string[,] BinaryData { get; set; }
 
@@ -42,10 +42,10 @@ namespace CSDataMiner2
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (DataTable InpData, MethodOfDelete ParseOption)
+		public DataParser (DataTable InpData, MethodOfDelete parseOption)
 		{
 
-			switch (ParseOption) {
+			switch (parseOption) {
 			case MethodOfDelete.Listwise:
 				StatusReport += "Listwise Deletion -> students with omitted data are removed before analyses.";
 				break;
@@ -66,7 +66,7 @@ namespace CSDataMiner2
 
 			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
 				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
-					if ((ParseOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
+					if ((parseOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
 						InpData.Rows [i].Delete ();
 						NumberDroppedStudents += 1;
 						break; //no need to continue iterating through a deleted row, break this loop and move to next one.
@@ -100,8 +100,8 @@ namespace CSDataMiner2
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
-							ChoiceData [i, j] = NULL_VALUE;
-							BinaryData [i, j] = ParseOption == MethodOfDelete.ZeroReplace ? "0" : NULL_VALUE;
+							ChoiceData [i, j] = NULLVALUE;
+							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NULLVALUE;
 						} else {
 							BinaryData [i, j] = "0";
 						}

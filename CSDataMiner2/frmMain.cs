@@ -31,7 +31,7 @@ namespace CSDataMiner2
 
 			var dcDataGet = new DataConnection (openFileDialog1.FileName);
 			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
-			var daDataDesc = new DataAnalyzer (dpDataFormat.BinaryData);
+			var daDataDesc = new DataAnalyzer (dpDataFormat.BinaryData, dpDataFormat.NullValue);
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
@@ -43,22 +43,20 @@ namespace CSDataMiner2
 			textBox1.Text += dpDataFormat.TestName;
 			textBox1.Text += Environment.NewLine;
 
-			/*  Add feature to display random 10 rows of data**********************
 			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (1); i++) {
-				for (int j = 0; j < dpDataFormat.BinaryData.GetLength (0); j++) {
-					textBox1.Text += dpDataFormat.BinaryData [j, i] + " ";
-				}
-				textBox1.Text += Environment.NewLine;
+				textBox1.Text += daDataDesc.GetRawScores (dpDataFormat.BinaryData) [i] + " ";
 			}
-			*/
 
 			textBox1.Text += Environment.NewLine;
 
 			for (int i = 0; i < dpDataFormat.AnswerKey.GetLength (0); i++) {
-				textBox1.Text += (i + 1) + " :\t" + dpDataFormat.AnswerKey [i] + "\t-> " + dpDataFormat.ItemType [i] + "\t @ " + dpDataFormat.Standards [i] + "\t\t :: " + daDataDesc.GetPValues () [i].ToString ();
+				textBox1.Text += (i + 1) + " :\t" + dpDataFormat.AnswerKey [i] + "\t-> " + dpDataFormat.ItemType [i] + "\t @ " +
+				dpDataFormat.Standards [i] + "  \t :: " + daDataDesc.GetPValues (dpDataFormat.BinaryData) [i];
 				textBox1.Text += Environment.NewLine;
 			}
 
+			textBox1.Text += Environment.NewLine;
+			textBox1.Text += "Std: " + daDataDesc.GetStandardDeviation (dpDataFormat.BinaryData);
 			textBox1.Text += Environment.NewLine;
 
 			foreach (string s in dpDataFormat.StatusReport.Split ('.'))
