@@ -137,6 +137,39 @@ namespace CSDataMiner2
 			}
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
 		}
+
+		public double [,] GetFrequencies (string[] type)
+		{
+			var result = new double[ChoiceData.GetLength (0), 4];
+			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
+				if (type [i] != "MC")
+					continue;
+				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
+					string s = ChoiceData [i, j].Replace ("+", "");
+					if (s == "A" | s == "F") {
+						result [i, 0] += 1;
+						continue;
+					}
+					if (s == "B" | s == "G") {
+						result [i, 1] += 1;
+						continue;
+					}
+					if (s == "C" | s == "H") {
+						result [i, 2] += 1;
+						continue;
+					}
+					if (s == "D" | s == "J") {
+						result [i, 3] += 1;
+						continue;
+					}
+				}
+				result [i, 0] = Math.Round (result [i, 0] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
+				result [i, 1] = Math.Round (result [i, 1] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
+				result [i, 2] = Math.Round (result [i, 2] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
+				result [i, 3] = Math.Round (result [i, 3] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
+			}
+			return result;
+		}
 	}
 
 	enum MethodOfDelete

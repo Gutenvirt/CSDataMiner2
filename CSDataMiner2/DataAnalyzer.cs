@@ -53,8 +53,15 @@ namespace CSDataMiner2
 
 		public double GetAlpha (double[] pvalues, double stddev)
 		{
+			return GetAlpha (pvalues, stddev, -1); 
+		}
+
+		public double GetAlpha (double[] pvalues, double stddev, int colskip)
+		{
 			double variance = 0;
 			for (int i = 0; i < pvalues.GetLength (0); i++) {
+				if (i == colskip)
+					continue;
 				variance += pvalues [i] * (1 - pvalues [i]);
 			}
 			return (1 / (pvalues.GetLength (0) - 1) + 1) * (1 - variance / Math.Pow (stddev, 2));
@@ -109,11 +116,18 @@ namespace CSDataMiner2
 
 		public double GetStandardDeviation (string[,] data)
 		{
+			return GetStandardDeviation (-1, data);
+		}
+
+		public double GetStandardDeviation (int colskip, string[,] data)
+		{
 			double variance = 0;
 			double[] rawScores = GetRawScores (data);
 			double testMean = Average (rawScores);
 
 			for (int i = 0; i < rawScores.GetLength (0); i++) {
+				if (i == colskip)
+					continue;
 				variance += Math.Pow (rawScores [i] - testMean, 2);
 			}
 			return (double)Math.Sqrt (variance / rawScores.GetLength (0));
@@ -121,8 +135,15 @@ namespace CSDataMiner2
 
 		public double[] GetPValues (string[,] data)
 		{
+			return GetPValues (-1, data);
+		}
+
+		public double[] GetPValues (int colskip, string[,] data)
+		{
 			var result = new double[data.GetLength (0)];
 			for (int i = 0; i < data.GetLength (0); i++) {
+				if (i == colskip)
+					continue;
 				result [i] = Average (GetColumn (i, data));
 			}
 			return result;

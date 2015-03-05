@@ -32,7 +32,7 @@ namespace CSDataMiner2
 			InitializeComponent ();
 			openFileDialog1.ShowDialog ();
 
-			var dcDataGet = new DataConnection (openFileDialog1.FileName, Source.Eduphoria);
+			var dcDataGet = new DataConnection (openFileDialog1.FileName);
 			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
 			var daDataDesc = new DataAnalyzer (dpDataFormat.NullValue, dpDataFormat.BinaryData);
 			//ListWise -> Removes the student from database if there is ANY omission found.
@@ -43,6 +43,7 @@ namespace CSDataMiner2
 			string[] itemType = dpDataFormat.ItemType;
 			string[] itemStandards = dpDataFormat.Standards;
 			string[] itemAnswers = dpDataFormat.AnswerKey;
+
 			double[] itemPvalues = daDataDesc.GetPValues (dpDataFormat.BinaryData);
 			double testStdDev = daDataDesc.GetStandardDeviation (dpDataFormat.BinaryData);
 			double testAlpha = daDataDesc.GetAlpha (itemPvalues, testStdDev);
@@ -52,6 +53,8 @@ namespace CSDataMiner2
 			double[] studentPercentScores = daDataDesc.GetPercentScores (dpDataFormat.BinaryData);
 
 			double[] itemPBS = daDataDesc.GetPointBiSerial (testStdDev, studentRawScores, dpDataFormat.BinaryData);
+			double[] testStatistics = daDataDesc.GetDescriptiveStats (studentRawScores);
+			double[,] MCFreq = dpDataFormat.GetFrequencies (itemType);
 
 			textBox1.Text += testName + Environment.NewLine;
 			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
@@ -61,8 +64,15 @@ namespace CSDataMiner2
 			textBox1.Text += "STD: " + testStdDev + Environment.NewLine;
 			textBox1.Text += "SEM: " + testSEM + Environment.NewLine;
 			textBox1.Text += "Alp: " + testAlpha + Environment.NewLine;
-			foreach (double n in daDataDesc.GetDescriptiveStats (daDataDesc.GetRawScores (dpDataFormat.BinaryData ) )) {
-				textBox1.Text += n + Environment.NewLine;
+			textBox1.Text += "Min: " + testStatistics [0] + Environment.NewLine;
+			textBox1.Text += "Q1 : " + testStatistics [1] + Environment.NewLine;
+			textBox1.Text += "Mea: " + testStatistics [2] + Environment.NewLine;
+			textBox1.Text += "Med: " + testStatistics [3] + Environment.NewLine;
+			textBox1.Text += "Q3 : " + testStatistics [4] + Environment.NewLine;
+			textBox1.Text += "Max: " + testStatistics [5] + Environment.NewLine;
+
+			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
+				textBox1.Text += MCFreq [i, 0] + " " + MCFreq [i, 1] + " " + MCFreq [i, 2] + " " + MCFreq [i, 3] + Environment.NewLine;
 			}
 		}
 	}
