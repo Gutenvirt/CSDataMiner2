@@ -36,6 +36,8 @@ namespace CSDataMiner2
 
 		public string[] AnswerKey { get; set; }
 
+		public double[] CRAverages { get; set; }
+
 		public string[] ItemType { get; set; }
 
 		public string TestName { get; set; }
@@ -45,9 +47,8 @@ namespace CSDataMiner2
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (DataTable InpData, MethodOfDelete parseOption)
+		public DataParser (DataTable InpData, MethodOfDelete parseOption, bool replaceConstructedResponse)
 		{
-
 			switch (parseOption) {
 			case MethodOfDelete.Listwise:
 				StatusReport += "Listwise Deletion -> students with omitted data are removed before analyses.";
@@ -118,7 +119,6 @@ namespace CSDataMiner2
 			char[] VALID_ALPHAS = "ABCDEFGHIJ".ToCharArray ();
 			ItemType = new string[AnswerKey.GetLength (0)]; 
 
-
 			for (int i = 0; i < AnswerKey.GetLength (0); i++) {
 				string s = AnswerKey [i];
 				string iType = "CR";
@@ -136,11 +136,37 @@ namespace CSDataMiner2
 				ItemType [i] = AnswerKey [i] == "NA" ? "MC" : iType;
 			}
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
+			if (replaceConstructedResponse)
+				CRAverages = ConvertConstructedResponse ();
+		}
+
+
+		public double[] ConvertConstructedResponse ()
+		{
+			var result = new double[ChoiceData.GetLength (0)];
+			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
+				if (ItemType [i] != "CR")
+					continue;
+				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
+					string s = ChoiceData [i, j].Replace ("+", "");
+					if (s == NullValue)
+						continue;
+					result [i] += double.Parse (s);
+				}
+				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
+				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
+					string s = ChoiceData [i, j].Replace ("+", "");
+					if (s == NullValue)
+						continue;
+					BinaryData [i, j] = double.Parse (s) >= result [i] ? "1" : "0";
+				}
+			}
+			return result;
 		}
 
 		public double [,] GetFrequencies (string[] type)
 		{
-			var result = new double[ChoiceData.GetLength (0), 4];
+			var result = new double[ChoiceData.GetLength (0), 5];
 			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
 				if (type [i] != "MC")
 					continue;
@@ -162,11 +188,16 @@ namespace CSDataMiner2
 						result [i, 3] += 1;
 						continue;
 					}
+					if (s == NullValue) {
+						result [i, 4] += 1;
+						continue;
+					}
 				}
-				result [i, 0] = Math.Round (result [i, 0] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
-				result [i, 1] = Math.Round (result [i, 1] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
-				result [i, 2] = Math.Round (result [i, 2] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
-				result [i, 3] = Math.Round (result [i, 3] / (result [i, 0] + result [i, 1] + result [i, 2] + result [i, 3]) * 100, 0);
+				result [i, 0] = Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 1] = Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 2] = Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 3] = Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 4] = Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
 			}
 			return result;
 		}

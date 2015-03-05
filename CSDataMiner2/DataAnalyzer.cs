@@ -25,12 +25,14 @@ namespace CSDataMiner2
 {
 	public class DataAnalyzer
 	{
+		public int Precision { get; set; }
 
 		public string NullValue { get; set; }
 
 		public DataAnalyzer (string nullvalue, string[,] inpData)
 		{
 			NullValue = nullvalue;
+			Precision = 6;
 		}
 
 		public double[] GetRawScores (string[,] data)
@@ -64,12 +66,12 @@ namespace CSDataMiner2
 					continue;
 				variance += pvalues [i] * (1 - pvalues [i]);
 			}
-			return (1 / (pvalues.GetLength (0) - 1) + 1) * (1 - variance / Math.Pow (stddev, 2));
+			return Math.Round ((1 / (pvalues.GetLength (0) - 1) + 1) * (1 - variance / Math.Pow (stddev, 2)), Precision);
 		}
 
 		public double GetStandardErrorOfMeasure (double stddev, double alpha)
 		{
-			return stddev * Math.Sqrt (1 - alpha);
+			return Math.Round (stddev * Math.Sqrt (1 - alpha), Precision);
 		}
 
 		public double[] GetPointBiSerial (double stddev, double[] scores, string[,] data)
@@ -94,7 +96,7 @@ namespace CSDataMiner2
 			for (int i = 0; i < data.GetLength (0); i++) {
 				meanCorrect [i] = meanCorrect [i] / numStuCorrect [i];
 				meanWrong [i] = meanWrong [i] / numStuWrong [i];
-				result [i] = (meanCorrect [i] - meanWrong [i]) / stddev * Math.Sqrt (numStuCorrect [i] / (double)data.GetLength (1) * numStuWrong [i] / (double)data.GetLength (1));
+				result [i] = Math.Round ((meanCorrect [i] - meanWrong [i]) / stddev * Math.Sqrt (numStuCorrect [i] / (double)data.GetLength (1) * numStuWrong [i] / (double)data.GetLength (1)), Precision);
 			}
 			return result;
 		}
@@ -130,7 +132,7 @@ namespace CSDataMiner2
 					continue;
 				variance += Math.Pow (rawScores [i] - testMean, 2);
 			}
-			return (double)Math.Sqrt (variance / rawScores.GetLength (0));
+			return (double)Math.Round (Math.Sqrt (variance / rawScores.GetLength (0)), Precision);
 		}
 
 		public double[] GetPValues (string[,] data)
@@ -149,6 +151,17 @@ namespace CSDataMiner2
 			return result;
 		}
 
+
+		public double[] GetAlphaIfDropped (string[,] data)
+		{
+			var result = new double[data.GetLength (0)];
+			for (int i = 0; i < data.GetLength (0); i++) {
+				result [i] = GetAlpha (GetPValues (i, data), GetStandardDeviation (i, data), i);
+			}
+			return result;
+		}
+
+
 		public double Sum (double[] list)
 		{
 			double result = 0;
@@ -161,7 +174,7 @@ namespace CSDataMiner2
 		public double Average (double[] list)
 		{
 			double sum = Sum (list);
-			double result = (double)sum / list.GetLength (0);
+			double result = (double)Math.Round (sum / list.GetLength (0), Precision);
 			return result;
 		}
 

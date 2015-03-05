@@ -33,7 +33,7 @@ namespace CSDataMiner2
 			openFileDialog1.ShowDialog ();
 
 			var dcDataGet = new DataConnection (openFileDialog1.FileName);
-			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise);
+			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise, true);
 			var daDataDesc = new DataAnalyzer (dpDataFormat.NullValue, dpDataFormat.BinaryData);
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
@@ -44,23 +44,32 @@ namespace CSDataMiner2
 			string[] itemStandards = dpDataFormat.Standards;
 			string[] itemAnswers = dpDataFormat.AnswerKey;
 
+			double[] studentRawScores = daDataDesc.GetRawScores (dpDataFormat.BinaryData);
+			double[] studentPercentScores = daDataDesc.GetPercentScores (dpDataFormat.BinaryData);
+
+			int testLength = itemAnswers.GetLength (0);
+			int studentLength = studentRawScores.GetLength (0);
+
 			double[] itemPvalues = daDataDesc.GetPValues (dpDataFormat.BinaryData);
 			double testStdDev = daDataDesc.GetStandardDeviation (dpDataFormat.BinaryData);
 			double testAlpha = daDataDesc.GetAlpha (itemPvalues, testStdDev);
-			double testSEM = daDataDesc.GetStandardErrorOfMeasure (testStdDev, testAlpha);
 
-			double[] studentRawScores = daDataDesc.GetRawScores (dpDataFormat.BinaryData);
-			double[] studentPercentScores = daDataDesc.GetPercentScores (dpDataFormat.BinaryData);
+			double testSEM = daDataDesc.GetStandardErrorOfMeasure (testStdDev, testAlpha);
 
 			double[] itemPBS = daDataDesc.GetPointBiSerial (testStdDev, studentRawScores, dpDataFormat.BinaryData);
 			double[] testStatistics = daDataDesc.GetDescriptiveStats (studentRawScores);
 			double[,] MCFreq = dpDataFormat.GetFrequencies (itemType);
 
+			double[] testAifD = daDataDesc.GetAlphaIfDropped (dpDataFormat.BinaryData);
+
 			textBox1.Text += testName + Environment.NewLine;
+			textBox1.Text += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
 			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
-				textBox1.Text += (i + 1) + "  :  " + itemType [i] + "  :  " + itemStandards [i] + " :\t\t" +
-				itemAnswers [i] + " :\t" + itemPvalues [i] + " :\t" + itemPBS [i] + " :\t" + Environment.NewLine;
+				textBox1.Text += (i + 1) + "\t" + itemType [i] + "\t" + itemStandards [i] + "\t\t" +
+				itemAnswers [i] + "\t" + itemPvalues [i] + "\t" + itemPBS [i] + "\t" + testAifD [i] + Environment.NewLine;
 			}
+
+			textBox1.Text += Environment.NewLine + "Descriptive Statistics" + Environment.NewLine;
 			textBox1.Text += "STD: " + testStdDev + Environment.NewLine;
 			textBox1.Text += "SEM: " + testSEM + Environment.NewLine;
 			textBox1.Text += "Alp: " + testAlpha + Environment.NewLine;
@@ -70,9 +79,18 @@ namespace CSDataMiner2
 			textBox1.Text += "Med: " + testStatistics [3] + Environment.NewLine;
 			textBox1.Text += "Q3 : " + testStatistics [4] + Environment.NewLine;
 			textBox1.Text += "Max: " + testStatistics [5] + Environment.NewLine;
+			textBox1.Text += Environment.NewLine;
 
 			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
-				textBox1.Text += MCFreq [i, 0] + " " + MCFreq [i, 1] + " " + MCFreq [i, 2] + " " + MCFreq [i, 3] + Environment.NewLine;
+
+				switch (itemType [i]) {
+				case "MC":
+					textBox1.Text += MCFreq [i, 0] + "\t" + MCFreq [i, 1] + "\t" + MCFreq [i, 2] + "\t" + MCFreq [i, 3] + "\t" + MCFreq [i, 4] + Environment.NewLine;
+					break;
+				case "CR":
+					textBox1.Text += dpDataFormat.CRAverages [i] + Environment.NewLine;
+					break;
+				}
 			}
 		}
 	}
