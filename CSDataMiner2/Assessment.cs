@@ -27,40 +27,40 @@ namespace CSDataMiner2
 	{
 		public string Output { get; set; }
 
-		private string[,] BinData;
-
 		public Assessment (string filename)
 		{
 			var dcDataGet = new DataConnection (filename);
 			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise, true);
-			BinData = dpDataFormat.BinaryData;
 
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
+
+			string[,] AlphaData = dpDataFormat.ChoiceData;
+			string[,] DichotData = dpDataFormat.BinaryData;
 
 			string testName = dpDataFormat.TestName;
 			string[] itemType = dpDataFormat.ItemType;
 			string[] itemStandards = dpDataFormat.Standards;
 			string[] itemAnswers = dpDataFormat.AnswerKey;
 
-			double[] studentRawScores = DataAnalyzer.GetRawScores (ref BinData);
-			double[] studentPercentScores = DataAnalyzer.GetPercentScores (ref BinData);
+			double[] studentRawScores = DataAnalyzer.GetRawScores (ref DichotData);
+			double[] studentPercentScores = DataAnalyzer.GetPercentScores (ref DichotData);
 
 			int testLength = itemAnswers.GetLength (0);
 			int studentLength = studentRawScores.GetLength (0);
 
-			double[] itemPvalues = DataAnalyzer.GetPValues (ref BinData);
-			double testStdDev = DataAnalyzer.GetStandardDeviation (ref BinData);
+			double[] itemPvalues = DataAnalyzer.GetPValues (ref DichotData);
+			double testStdDev = DataAnalyzer.GetStandardDeviation (ref DichotData);
 			double testAlpha = DataAnalyzer.GetAlpha (itemPvalues, testStdDev);
 
 			double testSEM = DataAnalyzer.GetStandardErrorOfMeasure (testStdDev, testAlpha);
 
-			double[] itemPBS = DataAnalyzer.GetPointBiSerial (testStdDev, studentRawScores, ref BinData);
+			double[] itemPBS = DataAnalyzer.GetPointBiSerial (testStdDev, studentRawScores, ref DichotData);
 			double[] testStatistics = DataAnalyzer.GetDescriptiveStats (studentRawScores);
 			double[,] MCFreq = dpDataFormat.GetFrequencies (itemType);
 
-			double[] testAifD = DataAnalyzer.GetAlphaIfDropped (ref BinData);
+			double[] testAifD = DataAnalyzer.GetAlphaIfDropped (ref DichotData);
 
 			Output += testName + Environment.NewLine;
 			Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;

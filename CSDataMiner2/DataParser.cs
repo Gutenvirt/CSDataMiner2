@@ -63,8 +63,9 @@ namespace CSDataMiner2
 
 			TestName = InpData.Rows [0].ItemArray [6].ToString ();
 
-			//Depending on the options, listwise deletions must be completed first since it changes the size of the datatable and
-			//ultimately the bounds of the CHOCIE and BINARY 2D array created later.
+
+
+			// NEW SUB CLIPTABLE*****************************************************************
 			char[] INVALID_CHARACTERS = "!@#$%NY".ToCharArray ();
 			int NumberDroppedStudents = 0;
 
@@ -81,16 +82,16 @@ namespace CSDataMiner2
 
 			if (NumberDroppedStudents > 0)
 				StatusReport += "There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.";
+				
 
-			//Extract the data and store in a 2D array; although the initial import of data is to a database, operations are much too slow to be useful.  Some overhead
-			//is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
+			// NEW SUB FETCHDATA*****************************************************************
 
 			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
 			BinaryData = new string[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
 			Standards = new string[BinaryData.GetLength (0)];
 			AnswerKey = new string[Standards.GetLength (0)];
 
-			//Pull the answer choice out
+
 			for (int i = 0; i < InpData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
 				Standards [i] = InpData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
 				//the standards are hardcoded @ row 4.
@@ -115,6 +116,8 @@ namespace CSDataMiner2
 					AnswerKey [i] = "NA";
 			}
 
+
+			// NEW SUB GETITEMTYPE*****************************************************************
 			char[] VALID_NUMERICS = "0123456789-.".ToCharArray ();
 			char[] VALID_ALPHAS = "ABCDEFGHIJ".ToCharArray ();
 			ItemType = new string[AnswerKey.GetLength (0)]; 
