@@ -27,11 +27,14 @@ namespace CSDataMiner2
 	{
 		public string Output { get; set; }
 
+		private string[,] BinData;
+
 		public Assessment (string filename)
 		{
 			var dcDataGet = new DataConnection (filename);
 			var dpDataFormat = new DataParser (dcDataGet.RawData, MethodOfDelete.Pairwise, true);
-			var daDataDesc = new DataAnalyzer (dpDataFormat.NullValue, dpDataFormat.BinaryData);
+			BinData = dpDataFormat.BinaryData;
+
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
@@ -41,23 +44,23 @@ namespace CSDataMiner2
 			string[] itemStandards = dpDataFormat.Standards;
 			string[] itemAnswers = dpDataFormat.AnswerKey;
 
-			double[] studentRawScores = daDataDesc.GetRawScores (dpDataFormat.BinaryData);
-			double[] studentPercentScores = daDataDesc.GetPercentScores (dpDataFormat.BinaryData);
+			double[] studentRawScores = DataAnalyzer.GetRawScores (ref BinData);
+			double[] studentPercentScores = DataAnalyzer.GetPercentScores (ref BinData);
 
 			int testLength = itemAnswers.GetLength (0);
 			int studentLength = studentRawScores.GetLength (0);
 
-			double[] itemPvalues = daDataDesc.GetPValues (dpDataFormat.BinaryData);
-			double testStdDev = daDataDesc.GetStandardDeviation (dpDataFormat.BinaryData);
-			double testAlpha = daDataDesc.GetAlpha (itemPvalues, testStdDev);
+			double[] itemPvalues = DataAnalyzer.GetPValues (ref BinData);
+			double testStdDev = DataAnalyzer.GetStandardDeviation (ref BinData);
+			double testAlpha = DataAnalyzer.GetAlpha (itemPvalues, testStdDev);
 
-			double testSEM = daDataDesc.GetStandardErrorOfMeasure (testStdDev, testAlpha);
+			double testSEM = DataAnalyzer.GetStandardErrorOfMeasure (testStdDev, testAlpha);
 
-			double[] itemPBS = daDataDesc.GetPointBiSerial (testStdDev, studentRawScores, dpDataFormat.BinaryData);
-			double[] testStatistics = daDataDesc.GetDescriptiveStats (studentRawScores);
+			double[] itemPBS = DataAnalyzer.GetPointBiSerial (testStdDev, studentRawScores, ref BinData);
+			double[] testStatistics = DataAnalyzer.GetDescriptiveStats (studentRawScores);
 			double[,] MCFreq = dpDataFormat.GetFrequencies (itemType);
 
-			double[] testAifD = daDataDesc.GetAlphaIfDropped (dpDataFormat.BinaryData);
+			double[] testAifD = DataAnalyzer.GetAlphaIfDropped (ref BinData);
 
 			Output += testName + Environment.NewLine;
 			Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
