@@ -1,4 +1,4 @@
-﻿//
+//
 //  DataParser.cs
 //
 //  Author:
@@ -26,8 +26,9 @@ namespace CSDataMiner2
 {
 	class DataParser
 	{
-	
-		public int?[,] BinaryData { get; set; }
+		public string NullValue = "NaN";
+
+		public string[,] BinaryData { get; set; }
 
 		public string[,] ChoiceData { get; set; }
 
@@ -35,89 +36,85 @@ namespace CSDataMiner2
 
 		public string[] AnswerKey { get; set; }
 
+		public double[] CRAverages { get; set; }
+
 		public string[] ItemType { get; set; }
 
 		public string TestName { get; set; }
 
-		private double[] _crAverages;
-
-		private bool ReplaceConstructedResponse = true;
-		private MethodOfDelete DeleteOption = MethodOfDelete.Pairwise;
+		public string StatusReport { get; set; }
 
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (MethodOfDelete deleteOption, bool replaceConstructedResponse, ref DataTable srcData)
+		public DataParser (DataTable InpData, MethodOfDelete parseOption, bool replaceConstructedResponse)
 		{
-			ReplaceConstructedResponse = replaceConstructedResponse;
-			DeleteOption = deleteOption;
+			switch (parseOption) {
+			case MethodOfDelete.Listwise:
+				StatusReport += "Listwise Deletion -> students with omitted data are removed before analyses.";
+				break;
+			case MethodOfDelete.Pairwise:
+				StatusReport += "Pairwise Deletion -> students with omitted data are included where possible in the analyses.";
+				break;
+			case MethodOfDelete.ZeroReplace:
+				StatusReport += "Replace Deletion -> students with ommitted data are given a zero, where appropriate, for the analyses.";
+				break;
+			}
 
-			if (deleteOption = MethodOfDelete.Listwise)
-				ClipData (ref srcData);
-		}
+			TestName = InpData.Rows [0].ItemArray [6].ToString ();
 
-		public void ClipData (ref DataTable srcData)
-		{
+			//Depending on the options, listwise deletions must be completed first since it changes the size of the datatable and
+			//ultimately the bounds of the CHOCIE and BINARY 2D array created later.
 			char[] INVALID_CHARACTERS = "!@#$%NY".ToCharArray ();
 			int NumberDroppedStudents = 0;
 
-			for (int i = srcData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
-				for (int j = srcData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
-					if ((srcData.Rows [i].ItemArray [j] == DBNull.Value) | (srcData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
-						srcData.Rows [i].Delete ();
+			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
+				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
+					if ((parseOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
+						InpData.Rows [i].Delete ();
 						NumberDroppedStudents += 1;
 						break; //no need to continue iterating through a deleted row, break this loop and move to next one.
 					}
 				}
 			}
-			srcData.AcceptChanges (); 
+			InpData.AcceptChanges (); 
 
 			if (NumberDroppedStudents > 0)
-				Console.WriteLine ("There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.");
-		}
+				StatusReport += "There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.";
 
+			//Extract the data and store in a 2D array; although the initial import of data is to a database, operations are much too slow to be useful.  Some overhead
+			//is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
 
-		public void Parse (MethodOfDelete deleteOption, ref DataTable srcData)
-		{
-			ChoiceData = new string[srcData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, srcData.Rows.Count - dfLoc.FirstDataRow];
-			BinaryData = new int?[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
-
+			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
+			BinaryData = new string[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
+			Standards = new string[BinaryData.GetLength (0)];
 			AnswerKey = new string[Standards.GetLength (0)];
 
-			TestName = srcData.Rows [0].ItemArray [6].ToString ();
-
-			for (int i = 0; i < srcData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
-				Standards [i] = srcData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
+			//Pull the answer choice out
+			for (int i = 0; i < InpData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
+				Standards [i] = InpData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
 				//the standards are hardcoded @ row 4.
 
-				for (int j = 0; j < srcData.Rows.Count - dfLoc.FirstDataRow; j++) {
+				for (int j = 0; j < InpData.Rows.Count - dfLoc.FirstDataRow; j++) {
 
-					ChoiceData [i, j] = srcData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
+					ChoiceData [i, j] = InpData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
 
 					if (ChoiceData [i, j].IndexOf ("+") == 0) {
-						BinaryData [i, j] = 1;
+						BinaryData [i, j] = "1";
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
-							ChoiceData [i, j] = null;
-							if (deleteOption == MethodOfDelete.ZeroReplace) {
-								BinaryData [i, j] = 0;
-							} else {
-								BinaryData [i, j] = null;
-							}
+							ChoiceData [i, j] = NullValue;
+							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NullValue;
 						} else {
-							BinaryData [i, j] = 0;
+							BinaryData [i, j] = "0";
 						}
 					}
 				}
 				if (string.IsNullOrEmpty (AnswerKey [i]))
-					AnswerKey [i] = "";
+					AnswerKey [i] = "NA";
 			}
-		}
 
-		public void GetItemType ()
-		{
-			// NEW SUB GETITEMTYPE*****************************************************************
 			char[] VALID_NUMERICS = "0123456789-.".ToCharArray ();
 			char[] VALID_ALPHAS = "ABCDEFGHIJ".ToCharArray ();
 			ItemType = new string[AnswerKey.GetLength (0)]; 
@@ -152,16 +149,16 @@ namespace CSDataMiner2
 					continue;
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
-					if (s == null)
+					if (s == NullValue)
 						continue;
 					result [i] += double.Parse (s);
 				}
 				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
-					if (s == null)
+					if (s == NullValue)
 						continue;
-					BinaryData [i, j] = (int)(double.Parse (s) >= result [i] ? 1 : 0);
+					BinaryData [i, j] = double.Parse (s) >= result [i] ? "1" : "0";
 				}
 			}
 			return result;
@@ -191,7 +188,7 @@ namespace CSDataMiner2
 						result [i, 3] += 1;
 						continue;
 					}
-					if (s == null) {
+					if (s == NullValue) {
 						result [i, 4] += 1;
 						continue;
 					}
