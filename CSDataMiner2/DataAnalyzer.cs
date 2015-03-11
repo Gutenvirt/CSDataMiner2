@@ -23,19 +23,12 @@ using System;
 
 namespace CSDataMiner2
 {
-	public class DataAnalyzer
+	public static class DataAnalyzer
 	{
-		public int Precision { get; set; }
+		const int Precision = 6;
+		const string NullValue = "NaN";
 
-		public string NullValue { get; set; }
-
-		public DataAnalyzer (string nullvalue, string[,] inpData)
-		{
-			NullValue = nullvalue;
-			Precision = 6;
-		}
-
-		public double[] GetRawScores (string[,] data)
+		public static double[] GetRawScores (string[,] data)
 		{
 			var result = new double[data.GetLength (1)];
 			for (int i = 0; i < data.GetLength (1); i++) {
@@ -44,7 +37,7 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public double[] GetPercentScores (string[,] data)
+		public static double[] GetPercentScores (string[,] data)
 		{
 			var result = new double[data.GetLength (1)];
 			for (int i = 0; i < data.GetLength (1); i++) {
@@ -53,12 +46,12 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public double GetAlpha (double[] pvalues, double stddev)
+		public static double GetAlpha (double[] pvalues, double stddev)
 		{
 			return GetAlpha (pvalues, stddev, -1); 
 		}
 
-		public double GetAlpha (double[] pvalues, double stddev, int colskip)
+		public static double GetAlpha (double[] pvalues, double stddev, int colskip)
 		{
 			double variance = 0;
 			for (int i = 0; i < pvalues.GetLength (0); i++) {
@@ -69,12 +62,12 @@ namespace CSDataMiner2
 			return Math.Round ((1 / (pvalues.GetLength (0) - 1) + 1) * (1 - variance / Math.Pow (stddev, 2)), Precision);
 		}
 
-		public double GetStandardErrorOfMeasure (double stddev, double alpha)
+		public static double GetStandardErrorOfMeasure (double stddev, double alpha)
 		{
 			return Math.Round (stddev * Math.Sqrt (1 - alpha), Precision);
 		}
 
-		public double[] GetPointBiSerial (double stddev, double[] scores, string[,] data)
+		public static double[] GetPointBiSerial (double stddev, double[] scores, string[,] data)
 		{
 			var meanCorrect = new double[data.GetLength (0)];
 			var meanWrong = new double[data.GetLength (0)];
@@ -101,7 +94,7 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public double[] GetDescriptiveStats (double[] scores)
+		public static double[] GetDescriptiveStats (double[] scores)
 		{
 			Array.Sort (scores);
 			int size = scores.GetLength (0);
@@ -116,12 +109,12 @@ namespace CSDataMiner2
 			};
 		}
 
-		public double GetStandardDeviation (string[,] data)
+		public static double GetStandardDeviation (string[,] data)
 		{
 			return GetStandardDeviation (-1, data);
 		}
 
-		public double GetStandardDeviation (int colskip, string[,] data)
+		public static double GetStandardDeviation (int colskip, string[,] data)
 		{
 			double variance = 0;
 			double[] rawScores = GetRawScores (data);
@@ -135,12 +128,12 @@ namespace CSDataMiner2
 			return (double)Math.Round (Math.Sqrt (variance / rawScores.GetLength (0)), Precision);
 		}
 
-		public double[] GetPValues (string[,] data)
+		public static double[] GetPValues (string[,] data)
 		{
 			return GetPValues (-1, data);
 		}
 
-		public double[] GetPValues (int colskip, string[,] data)
+		public static double[] GetPValues (int colskip, string[,] data)
 		{
 			var result = new double[data.GetLength (0)];
 			for (int i = 0; i < data.GetLength (0); i++) {
@@ -152,7 +145,7 @@ namespace CSDataMiner2
 		}
 
 
-		public double[] GetAlphaIfDropped (string[,] data)
+		public static double[] GetAlphaIfDropped (string[,] data)
 		{
 			var result = new double[data.GetLength (0)];
 			for (int i = 0; i < data.GetLength (0); i++) {
@@ -162,7 +155,7 @@ namespace CSDataMiner2
 		}
 
 
-		public double Sum (double[] list)
+		public static double Sum (double[] list)
 		{
 			double result = 0;
 			for (int i = 0; i < list.GetLength (0); i++) {
@@ -171,14 +164,14 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public double Average (double[] list)
+		public static double Average (double[] list)
 		{
 			double sum = Sum (list);
 			double result = (double)Math.Round (sum / list.GetLength (0), Precision);
 			return result;
 		}
 
-		public double[] GetRow (int index, string[,] data)
+		public static double[] GetRow (int index, string[,] data)
 		{
 			int offset = 0;
 			var source = new string [data.GetLength (0)];
@@ -198,7 +191,7 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public double[] GetColumn (int index, string[,] data)
+		public static double[] GetColumn (int index, string[,] data)
 		{
 			int offset = 0;
 			var source = new string [data.GetLength (1)];
