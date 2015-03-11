@@ -37,7 +37,7 @@ namespace CSDataMiner2
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
 
 			string[,] AlphaData = dpDataFormat.ChoiceData;
-			string[,] DichotData = dpDataFormat.BinaryData;
+			byte[,] DichotData = dpDataFormat.BinaryData;
 
 			string testName = dpDataFormat.TestName;
 			string[] itemType = dpDataFormat.ItemType;

@@ -26,9 +26,8 @@ namespace CSDataMiner2
 {
 	class DataParser
 	{
-		public string NullValue = "NaN";
-
-		public string[,] BinaryData { get; set; }
+	
+		public int?[,] BinaryData { get; set; }
 
 		public string[,] ChoiceData { get; set; }
 
@@ -60,18 +59,17 @@ namespace CSDataMiner2
 				StatusReport += "Replace Deletion -> students with ommitted data are given a zero, where appropriate, for the analyses.";
 				break;
 			}
+		}
 
-			TestName = InpData.Rows [0].ItemArray [6].ToString ();
-
-
-
+		public void DataClip (DataTable InpData)
+		{
 			// NEW SUB CLIPTABLE*****************************************************************
 			char[] INVALID_CHARACTERS = "!@#$%NY".ToCharArray ();
 			int NumberDroppedStudents = 0;
 
 			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
 				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
-					if ((parseOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
+					if ((InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
 						InpData.Rows [i].Delete ();
 						NumberDroppedStudents += 1;
 						break; //no need to continue iterating through a deleted row, break this loop and move to next one.
@@ -82,15 +80,16 @@ namespace CSDataMiner2
 
 			if (NumberDroppedStudents > 0)
 				StatusReport += "There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.";
-				
+		}
 
-			// NEW SUB FETCHDATA*****************************************************************
-
+		public void Parse ()
+		{
 			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
-			BinaryData = new string[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
+			BinaryData = new int?[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
 			Standards = new string[BinaryData.GetLength (0)];
 			AnswerKey = new string[Standards.GetLength (0)];
 
+			TestName = InpData.Rows [0].ItemArray [6].ToString ();
 
 			for (int i = 0; i < InpData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
 				Standards [i] = InpData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
@@ -101,22 +100,29 @@ namespace CSDataMiner2
 					ChoiceData [i, j] = InpData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
 
 					if (ChoiceData [i, j].IndexOf ("+") == 0) {
-						BinaryData [i, j] = "1";
+						BinaryData [i, j] = 1;
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
-							ChoiceData [i, j] = NullValue;
-							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NullValue;
+							ChoiceData [i, j] = null;
+							if (parseOption == MethodOfDelete.ZeroReplace) {
+								BinaryData [i, j] = 0;
+							} else {
+								BinaryData [i, j] = null;
+							}
 						} else {
-							BinaryData [i, j] = "0";
+							BinaryData [i, j] = 0;
 						}
 					}
 				}
 				if (string.IsNullOrEmpty (AnswerKey [i]))
-					AnswerKey [i] = "NA";
+					AnswerKey [i] = "";
 			}
 
+		}
 
+		public void GetItemType ()
+		{
 			// NEW SUB GETITEMTYPE*****************************************************************
 			char[] VALID_NUMERICS = "0123456789-.".ToCharArray ();
 			char[] VALID_ALPHAS = "ABCDEFGHIJ".ToCharArray ();
@@ -152,16 +158,16 @@ namespace CSDataMiner2
 					continue;
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
-					if (s == NullValue)
+					if (s == null)
 						continue;
 					result [i] += double.Parse (s);
 				}
 				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
-					if (s == NullValue)
+					if (s == null)
 						continue;
-					BinaryData [i, j] = double.Parse (s) >= result [i] ? "1" : "0";
+					BinaryData [i, j] = (int)(double.Parse (s) >= result [i] ? 1 : 0);
 				}
 			}
 			return result;
@@ -191,7 +197,7 @@ namespace CSDataMiner2
 						result [i, 3] += 1;
 						continue;
 					}
-					if (s == NullValue) {
+					if (s == null) {
 						result [i, 4] += 1;
 						continue;
 					}
