@@ -35,69 +35,64 @@ namespace CSDataMiner2
 
 		public string[] AnswerKey { get; set; }
 
-		public double[] CRAverages { get; set; }
-
 		public string[] ItemType { get; set; }
 
 		public string TestName { get; set; }
 
-		public string StatusReport { get; set; }
+		private double[] _crAverages;
+
+		private bool ReplaceConstructedResponse = true;
+		private MethodOfDelete DeleteOption = MethodOfDelete.Pairwise;
 
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (DataTable InpData, MethodOfDelete parseOption, bool replaceConstructedResponse)
+		public DataParser (MethodOfDelete deleteOption, bool replaceConstructedResponse, ref DataTable srcData)
 		{
-			switch (parseOption) {
-			case MethodOfDelete.Listwise:
-				StatusReport += "Listwise Deletion -> students with omitted data are removed before analyses.";
-				break;
-			case MethodOfDelete.Pairwise:
-				StatusReport += "Pairwise Deletion -> students with omitted data are included where possible in the analyses.";
-				break;
-			case MethodOfDelete.ZeroReplace:
-				StatusReport += "Replace Deletion -> students with ommitted data are given a zero, where appropriate, for the analyses.";
-				break;
-			}
+			ReplaceConstructedResponse = replaceConstructedResponse;
+			DeleteOption = deleteOption;
+
+			if (deleteOption = MethodOfDelete.Listwise)
+				ClipData (ref srcData);
 		}
 
-		public void DataClip (DataTable InpData)
+		public void ClipData (ref DataTable srcData)
 		{
-			// NEW SUB CLIPTABLE*****************************************************************
 			char[] INVALID_CHARACTERS = "!@#$%NY".ToCharArray ();
 			int NumberDroppedStudents = 0;
 
-			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
-				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
-					if ((InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
-						InpData.Rows [i].Delete ();
+			for (int i = srcData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
+				for (int j = srcData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
+					if ((srcData.Rows [i].ItemArray [j] == DBNull.Value) | (srcData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
+						srcData.Rows [i].Delete ();
 						NumberDroppedStudents += 1;
 						break; //no need to continue iterating through a deleted row, break this loop and move to next one.
 					}
 				}
 			}
-			InpData.AcceptChanges (); 
+			srcData.AcceptChanges (); 
 
 			if (NumberDroppedStudents > 0)
-				StatusReport += "There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.";
+				Console.WriteLine ("There were " + NumberDroppedStudents + " student records dropped because of improper record format or selected missing data option.");
 		}
 
-		public void Parse ()
+
+		public void Parse (MethodOfDelete deleteOption, ref DataTable srcData)
 		{
-			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
+			ChoiceData = new string[srcData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, srcData.Rows.Count - dfLoc.FirstDataRow];
 			BinaryData = new int?[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
-			Standards = new string[BinaryData.GetLength (0)];
+
 			AnswerKey = new string[Standards.GetLength (0)];
 
-			TestName = InpData.Rows [0].ItemArray [6].ToString ();
+			TestName = srcData.Rows [0].ItemArray [6].ToString ();
 
-			for (int i = 0; i < InpData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
-				Standards [i] = InpData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
+			for (int i = 0; i < srcData.Columns.Count - dfLoc.FirstDataCol - dfLoc.LastDataCol; i++) {
+				Standards [i] = srcData.Rows [4].ItemArray [i + dfLoc.FirstDataCol].ToString ();
 				//the standards are hardcoded @ row 4.
 
-				for (int j = 0; j < InpData.Rows.Count - dfLoc.FirstDataRow; j++) {
+				for (int j = 0; j < srcData.Rows.Count - dfLoc.FirstDataRow; j++) {
 
-					ChoiceData [i, j] = InpData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
+					ChoiceData [i, j] = srcData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
 
 					if (ChoiceData [i, j].IndexOf ("+") == 0) {
 						BinaryData [i, j] = 1;
@@ -105,7 +100,7 @@ namespace CSDataMiner2
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
 							ChoiceData [i, j] = null;
-							if (parseOption == MethodOfDelete.ZeroReplace) {
+							if (deleteOption == MethodOfDelete.ZeroReplace) {
 								BinaryData [i, j] = 0;
 							} else {
 								BinaryData [i, j] = null;
@@ -118,7 +113,6 @@ namespace CSDataMiner2
 				if (string.IsNullOrEmpty (AnswerKey [i]))
 					AnswerKey [i] = "";
 			}
-
 		}
 
 		public void GetItemType ()
