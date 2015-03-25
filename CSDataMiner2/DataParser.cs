@@ -28,7 +28,7 @@ namespace CSDataMiner2
 	{
 		public string NullValue = "NaN";
 
-		public string[,] BinaryData { get; set; }
+		public byte[,] BinaryData { get; set; }
 
 		public string[,] ChoiceData { get; set; }
 
@@ -47,9 +47,9 @@ namespace CSDataMiner2
 		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (DataTable InpData, MethodOfDelete parseOption, bool replaceConstructedResponse)
+		public DataParser (DataTable InpData)
 		{
-			switch (parseOption) {
+			switch (GlobalSettings.DeleteOption) {
 			case MethodOfDelete.Listwise:
 				StatusReport += "Listwise Deletion -> students with omitted data are removed before analyses.";
 				break;
@@ -70,7 +70,7 @@ namespace CSDataMiner2
 
 			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
 				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
-					if ((parseOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
+					if ((GlobalSettings.DeleteOption == MethodOfDelete.Listwise && InpData.Rows [i].ItemArray [j] == DBNull.Value) | (InpData.Rows [i].ItemArray [j].ToString ().IndexOfAny (INVALID_CHARACTERS) > -1)) {
 						InpData.Rows [i].Delete ();
 						NumberDroppedStudents += 1;
 						break; //no need to continue iterating through a deleted row, break this loop and move to next one.
@@ -86,7 +86,7 @@ namespace CSDataMiner2
 			//is lost initially, but in the long run, array ops are quick and efficient and overall speed up the processing.
 
 			ChoiceData = new string[InpData.Columns.Count - dfLoc.LastDataCol - dfLoc.FirstDataCol, InpData.Rows.Count - dfLoc.FirstDataRow];
-			BinaryData = new string[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
+			BinaryData = new byte[ChoiceData.GetLength (0), ChoiceData.GetLength (1)];
 			Standards = new string[BinaryData.GetLength (0)];
 			AnswerKey = new string[Standards.GetLength (0)];
 
@@ -100,14 +100,14 @@ namespace CSDataMiner2
 					ChoiceData [i, j] = InpData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
 
 					if (ChoiceData [i, j].IndexOf ("+") == 0) {
-						BinaryData [i, j] = "1";
+						BinaryData [i, j] = 1;
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
 							ChoiceData [i, j] = NullValue;
-							BinaryData [i, j] = parseOption == MethodOfDelete.ZeroReplace ? "0" : NullValue;
+							BinaryData [i, j] = (byte)(GlobalSettings.DeleteOption == MethodOfDelete.ZeroReplace ? 0 : 255);
 						} else {
-							BinaryData [i, j] = "0";
+							BinaryData [i, j] = 0;
 						}
 					}
 				}
@@ -136,7 +136,7 @@ namespace CSDataMiner2
 				ItemType [i] = AnswerKey [i] == "NA" ? "MC" : iType;
 			}
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
-			if (replaceConstructedResponse)
+			if (GlobalSettings.ReplaceCR)
 				CRAverages = ConvertConstructedResponse ();
 		}
 
@@ -151,22 +151,22 @@ namespace CSDataMiner2
 					string s = ChoiceData [i, j].Replace ("+", "");
 					if (s == NullValue)
 						continue;
-					result [i] += double.Parse (s);
+					result [i] += float.Parse (s);
 				}
 				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
 					if (s == NullValue)
 						continue;
-					BinaryData [i, j] = double.Parse (s) >= result [i] ? "1" : "0";
+					BinaryData [i, j] = (byte)(double.Parse (s) >= result [i] ? 1 : 0);
 				}
 			}
 			return result;
 		}
 
-		public double [,] GetFrequencies (string[] type)
+		public float [,] GetFrequencies (string[] type)
 		{
-			var result = new double[ChoiceData.GetLength (0), 5];
+			var result = new float[ChoiceData.GetLength (0), 5];
 			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
 				if (type [i] != "MC")
 					continue;
@@ -193,20 +193,13 @@ namespace CSDataMiner2
 						continue;
 					}
 				}
-				result [i, 0] = Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 1] = Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 2] = Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 3] = Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 4] = Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 0] = (float)Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 1] = (float)Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 2] = (float)Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 3] = (float)Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 4] = (float)Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
 			}
 			return result;
 		}
-	}
-
-	enum MethodOfDelete
-	{
-		Listwise,
-		Pairwise,
-		ZeroReplace
 	}
 }

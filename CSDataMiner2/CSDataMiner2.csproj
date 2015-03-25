@@ -78,6 +78,8 @@
     </Compile>
     <Compile Include="Assessment.cs" />
     <Compile Include="DataFileLocations.cs" />
+    <Compile Include="GlobalSettings.cs" />
+    <Compile Include="FileIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
