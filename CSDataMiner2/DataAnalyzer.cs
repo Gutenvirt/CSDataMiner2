@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 
 namespace CSDataMiner2
 {
@@ -107,6 +108,36 @@ namespace CSDataMiner2
 				(size % 2 != 0) ? (float)scores [size / 4 * 3] : ((float)scores [size / 4 * 3] + (float)scores [size / 4 * 3 - 1]) / 2,
 				scores [size - 1]
 			};
+		}
+
+		public static int[] GetStudentHistogramValues (float[] scores, int nColumns)
+		{ 
+			var result = new int[10];
+
+			for (int i = 0; i < scores.GetLength (0); i++) {
+				double _s = scores [i] / nColumns;
+				if (_s < 0.1)
+					result [0] += 1;
+				if (_s >= 0.1 & _s < 0.2)
+					result [1] += 1;
+				if (_s >= 0.2 & _s < 0.3)
+					result [2] += 1;
+				if (_s >= 0.3 & _s < 0.4)
+					result [3] += 1;
+				if (_s >= 0.4 & _s < 0.5)
+					result [4] += 1;
+				if (_s >= 0.5 & _s < 0.6)
+					result [5] += 1;
+				if (_s >= 0.6 & _s < 0.7)
+					result [6] += 1;
+				if (_s >= 0.7 & _s < 0.8)
+					result [7] += 1;
+				if (_s >= 0.8 & _s < 0.9)
+					result [8] += 1;
+				if (_s >= 0.9)
+					result [9] += 1;
+			}
+			return result;
 		}
 
 		public static float GetStandardDeviation (byte[,] data)
