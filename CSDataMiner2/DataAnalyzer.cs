@@ -175,6 +175,10 @@ namespace CSDataMiner2
 			return result;
 		}
 
+		public static float GetTestSkew (float testMean, float testMedian, float testSTDev)
+		{
+			return 3 * (testMean - testMedian) / testSTDev;
+		}
 
 		public static float[] GetAlphaIfDropped (byte[,] data)
 		{

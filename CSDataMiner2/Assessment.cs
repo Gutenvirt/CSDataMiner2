@@ -44,6 +44,7 @@ namespace CSDataMiner2
 		float testStdDev;
 		float testAlpha;
 		float testMean;
+		float testSkew;
 
 		float testSEM;
 
@@ -83,6 +84,8 @@ namespace CSDataMiner2
 			testStatistics = DataAnalyzer.GetDescriptiveStats (studentRawScores);
 			testMean = testStatistics [2];
 			studentHistogram = DataAnalyzer.GetStudentHistogramValues (studentRawScores, testLength);
+
+			testSkew = DataAnalyzer.GetTestSkew (testMean, testStatistics [3], testStdDev);
 
 			MCFreq = dpDataFormat.GetFrequencies (itemType);
 
@@ -125,19 +128,19 @@ namespace CSDataMiner2
 		public string HTMLOut ()
 		{
 			string strHTML = "";
-			int _tableWidth = 600;
+			int _tableWidth = 660;
 			int _gDivHeight = 250;
 			int _gDivWidth = 515;
 			int _barWidth = 45;
-			int _medianLeft = 11 + Convert.ToInt16 (testMean / testLength * _gDivWidth);
+			int _medianLeft = 11 + (int)(testMean / testLength * _gDivWidth);
 			int _medianHeight = 231;
-			int _stdLeft = 11 + Convert.ToInt16 ((testMean - testStdDev) / testLength * _gDivWidth);
-			int _stdWidth = Convert.ToInt16 (testStdDev / testLength * 2 * _gDivWidth);
+			int _stdLeft = 11 + (int)((testMean - testStdDev) / testLength * _gDivWidth);
+			int _stdWidth = (int)(testStdDev / testLength * 2 * _gDivWidth);
 			int stdTop = 234;
 			int p100Top = 0;
-			int p75Top = Convert.ToInt16 (_gDivHeight / 4);
-			int p50Top = Convert.ToInt16 (_gDivWidth / 2);
-			int p25Top = Convert.ToInt16 (_gDivWidth / 4 * 3);
+			int p75Top = (int)(_gDivHeight / 4);
+			int p50Top = (int)(_gDivWidth / 2);
+			int p25Top = (int)(_gDivWidth / 4 * 3);
 
 			strHTML = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><HTML><HEAD><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"><meta name=\"author\" content=\"Chris Stefancik 2015\"><TITLE>" + testName + "</TITLE>";
 
@@ -158,7 +161,7 @@ namespace CSDataMiner2
 
 			strHTML += "</STYLE>";
 
-			strHTML += "</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + testName.ToString () + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today.ToString () + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
+			strHTML += "</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
 
 			strHTML += "</table><p></p><table>";
 			strHTML += "<tr><th colspan=\"2\">Raw Score</th><th colspan=\"8\">Percent Score Distribution</th></tr>";
@@ -170,20 +173,20 @@ namespace CSDataMiner2
 			}
 			strHTML += "<td ROWSPAN=\"12\" colspan=\"8\"><div><div class=\"graph\">";
 			for (int i = 0; i < 10; i++) {
-				strHTML += "<div style=\"height: " + Convert.ToInt16 (studentHistogram [i] / studentHistogram.Max () * 230) + "px\" class=\"bar\"></div>";
+				strHTML += "<div style=\"height: " + (int)(studentHistogram [i] / studentHistogram.Max () * 230) + "px\" class=\"bar\"></div>";
 			}
 			strHTML += "<div class=\"std\"></div>";
 			strHTML += "<div class=\"median\"></div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + Convert.ToInt16 (studentHistogram.Max () / studentLength * 100) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + Convert.ToInt16 (studentHistogram.Max () / studentLength * 75) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + Convert.ToInt16 (studentHistogram.Max () / studentLength * 50) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + Convert.ToInt16 (studentHistogram.Max () / studentLength * 25) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 100) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 75) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 50) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 25) + "%</div>";
 		
 			for (int i = 0; i < 10; i++) {
 				if (i == 9)
-					strHTML += "<div class=\"xlabel\">" + i * 10 + "-100</div>";
+					strHTML += "<div class=\"xlabel\">" + (i * 10) + "-100</div>";
 				else
-					strHTML += "<div class=\"xlabel\">" + i * 10 + "-" + i * 10 + 9 + "</div>";
+					strHTML += "<div class=\"xlabel\">" + (i * 10) + "-" + (i * 10 + 9) + "</div>";
 				strHTML += "</div></div></tr>";
 			}
 
@@ -200,55 +203,51 @@ namespace CSDataMiner2
 			strHTML += "<tr><td>Max</td><td>" + studentRawScores.Max () + "</td></tr>";
 			strHTML += "<tr><td>Std Dev</td><td>" + testStdDev.ToString ("0.00") + "</td></tr>";
 
+			if (testSkew > 0)
+				strHTML += "<tr><td>Skew</td><td>&#8592; " + testSkew.ToString ("0.00") + "</td></tr>";
+			else
+				strHTML += "<tr><td>Skew</td><td>&#8594; " + testSkew.ToString ("0.00") + "</td></tr>";
 
+			if (testAlpha < .7 | testAlpha > 1)
+				strHTML += "<tr><td>Alpha</td><td class=\"warning\">" + testAlpha.ToString ("0.00") + "</td></tr>";
+			else
+				strHTML += "<tr><td>Alpha</td><td>" + testAlpha.ToString ("0.00") + "</td></tr>";
+
+			strHTML += "<tr><td>SEM</td><td>" + testSEM.ToString ("0.00") + "</td></tr>";
+
+			/*Notes section
+			if (nNumberStudentsDrop > 0) {
+				strHTML += "<tr><td class=\"left\" colspan=\"11\">";
+				strHTML += "Note: Some students (" + nNumberStudentsDrop + " total) were dropped because of complete test omission or an error in the data record; consider rescoring the test and re-running this analysis tool.";
+			} 
+			*/
+
+			strHTML += "</table><p></p>";
 
 			/*
-
-
-
-				If testSkewness > 0 Then
-				strHTML &= "<tr><td>Skew</td><td>&#8592; " & testSkewness.ToString("0.00") & "</td></tr>"
-				Else
-				strHTML &= "<tr><td>Skew</td><td>&#8594; " & testSkewness.ToString("0.00") & "</td></tr>"
-				End If
-
-				If testAlpha < 0.7 Or testAlpha > 1 Then
-				strHTML &= "<tr><td>Alpha</td><td class=""warning"">" & testAlpha.ToString("0.00") & "</td></tr>"
-				Else
-				strHTML &= "<tr><td>Alpha</td><td>" & testAlpha.ToString("0.00") & "</td></tr>"
-				End If
-
-				strHTML &= "<tr><td>SEM</td><td>" & testSTDEM.ToString("0.00") & "</td></tr>"
-
-				'Notes section
-				If nNumberStudentsDrop > 0 Then
-				strHTML &= "<tr><td class=""left"" colspan=""11"">"
-				strHTML &= "Note: Some students (" & nNumberStudentsDrop & " total) were dropped because of complete test omission or an error in the data record; consider rescoring the test and re-running this analysis tool."
-				End If
-				strHTML &= "</table><p></p>"
 
 				'Test Design Section
 
 				strHTML &= "<table>"
-				strHTML &= "<tr><th colspan=""4"">Item Difficulty</th>" & _
+				strHTML &= "<tr><th colspan=\"4\">Item Difficulty</th>" & _
 				"<th>% of Items</th>" & _
-				"<th colspan=""4"">Item Discrimination</th>" & _
-				"<th colspan=""1"">% of Items</th></tr>"
+				"<th colspan=\"4\">Item Discrimination</th>" & _
+				"<th colspan=\"1\">% of Items</th></tr>"
 
-				strHTML &= "<tr><td colspan=""4"" class=""left"">Easy (Higher than 70%)</td>" & _
+				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" & _
 				"<td>" & Math.Round(itemDifficulty(2) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=""4"" class=""left"">Good (Higher than 0.3)</td>" & _
-				"<td colspan=""1"">" & Math.Round(itemDiscrimination(2) / nNumberColumns * 100, 1) & "</td></tr>"
+				"<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" & _
+				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(2) / nNumberColumns * 100, 1) & "</td></tr>"
 
-				strHTML &= "<tr><td colspan=""4"" class=""left"">Moderate (40% to 70%)</td>" & _
+				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" & _
 				"<td>" & Math.Round(itemDifficulty(1) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=""4"" class=""left"">Acceptable (0.2 to 0.3)</td>" & _
-				"<td colspan=""1"">" & Math.Round(itemDiscrimination(1) / nNumberColumns * 100, 1) & "</td></tr>"
+				"<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" & _
+				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(1) / nNumberColumns * 100, 1) & "</td></tr>"
 
-				strHTML &= "<tr><td colspan=""4"" class=""left"">Hard (Less than 40%)</td>" & _
+				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" & _
 				"<td>" & Math.Round(itemDifficulty(0) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=""4"" class=""left"">Needs Review (Less than 0.2)</td>" & _
-				"<td colspan=""1"">" & Math.Round(itemDiscrimination(0) / nNumberColumns * 100, 1) & "</td></tr>"
+				"<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" & _
+				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(0) / nNumberColumns * 100, 1) & "</td></tr>"
 
 				strHTML &= "</table><p></p>"
 
@@ -265,18 +264,18 @@ namespace CSDataMiner2
 				strHTML &= "<tr>"
 				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				End If
 
 				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=""center"">" & itemStrData(_a, StrData.Answer) & "</td>"
+				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC1) / nNumberRows * 100, 0) & "</td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC2) / nNumberRows * 100, 0) & "</td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC3) / nNumberRows * 100, 0) & "</td>"
@@ -300,18 +299,18 @@ namespace CSDataMiner2
 				strHTML &= "<tr>"
 				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				End If
 
 				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=""center"">" & itemStrData(_a, StrData.Answer) & "</td><td colspan=""4""></td>"
+				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td><td colspan=\"4\"></td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
 				strHTML &= "</tr>"
 				End If
@@ -331,18 +330,18 @@ namespace CSDataMiner2
 				strHTML &= "<tr>"
 				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				End If
 
 				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString() & "</td>"
-				strHTML &= "<td class=""center"">" & itemStrData(_a, StrData.Answer) & "</td>"
+				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td>"
 				strHTML &= "<td>" & (100 - ItemDblData(_a, DblData.PV) * 100 - c_CRPassRate(_a) - ItemIntData(_a, IntData.Omissions) / nNumberRows * 100).ToString("0.00") & "</td>"
 				strHTML &= "<td>" & c_CRPassRate(_a).ToString("0.00") & "</td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
@@ -363,18 +362,18 @@ namespace CSDataMiner2
 				strHTML &= "<tr>"
 				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=""warning"">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				Else
 				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
 				End If
 
 				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=""center"">" & itemStrData(_a, StrData.Answer).Substring(0, itemStrData(_a, StrData.Answer).IndexOf(".") + 3) & "</td>"
+				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer).Substring(0, itemStrData(_a, StrData.Answer).IndexOf(".") + 3) & "</td>"
 				strHTML &= "<td>" & (100 - c_CRPassRate(_a) - (ItemIntData(_a, IntData.Omissions) / nNumberRows * 100)).ToString("0.00") & "</td>"
 				strHTML &= "<td>" & c_CRPassRate(_a).ToString("0.00") & "</td>"
 				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
@@ -384,31 +383,27 @@ namespace CSDataMiner2
 				strHTML &= "</table>"
 				strHTML &= "<p></p>"
 				End If
+				*/
 
-				'References Section
+			//References Section
 
-				If True Then
-				strHTML &= "<table><tr><th colspan=""10"">Citations</th></tr><tr><td colspan=""10"" class=""left"">" & _
-				"<p>Afifi, A. A., & Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>" & _
-				"Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing & Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>" & _
-				"Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>" & _
-				"Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>" & _
-				"Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>" & _
-				"Kelley, T., Ebel, R., & Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>" & _
-				"Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta’s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>" & _
-				"Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>" & _
-				"Richardson, M. W., & Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>" & _
-				"Yu, C. H., & Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., & Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>" & _
-				"</p></td></tr></table>"
-				End If
-
-				strHTML &= "</table><p></p>"
-
-				sTime.Stop()
-				strHTML &= "<table>"
-				strHTML &= "<tr><th>Technical Information</th></td><tr><td class=""left"">Source file: " & sFileName.Remove(0, sFileName.LastIndexOf("\") + 1) & "<p></p>Total Elapsed Time: " & sTime.ElapsedMilliseconds / 1000 & " seconds</td></tr>"
-					strHTML &= "</table></HTML>"
-			*/
+				
+			strHTML += "<table><tr><th colspan=\"10\">Citations</th></tr><tr><td colspan=\"10\" class=\"left\">";
+			strHTML += "<p>Afifi, A. A., & Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
+			strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing & Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
+			strHTML += "Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>";
+			strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
+			strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
+			strHTML += "Kelley, T., Ebel, R., & Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
+			strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta’s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
+			strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
+			strHTML += "Richardson, M. W., & Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
+			strHTML += "Yu, C. H., & Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., & Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
+			strHTML += "</p></td></tr></table>";
+				
+			strHTML += "</table><p></p>";
+			
+			strHTML += "</HTML>";
 			return strHTML;
 		}
 	}
