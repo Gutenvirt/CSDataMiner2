@@ -115,7 +115,7 @@ namespace CSDataMiner2
 			var result = new int[10];
 
 			for (int i = 0; i < scores.GetLength (0); i++) {
-				double _s = scores [i] / nColumns;
+				double _s = scores [i] / (double)nColumns;
 				if (_s < 0.1)
 					result [0] += 1;
 				if (_s >= 0.1 & _s < 0.2)

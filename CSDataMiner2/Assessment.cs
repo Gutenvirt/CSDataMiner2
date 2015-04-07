@@ -121,6 +121,11 @@ namespace CSDataMiner2
 					break;
 				}
 			}
+			Output += Environment.NewLine;
+			Output += "Histogram (Max:" + studentHistogram.Max () + ")" + Environment.NewLine;
+			for (int i = 0; i < studentHistogram.GetLength (0); i++) {
+				Output += i + ": " + ((double)studentHistogram [i] / studentHistogram.Max ()) + Environment.NewLine;
+			}
 
 			Output += HTMLOut ();
 		}
@@ -136,7 +141,7 @@ namespace CSDataMiner2
 			int _medianHeight = 231;
 			int _stdLeft = 11 + (int)((testMean - testStdDev) / testLength * _gDivWidth);
 			int _stdWidth = (int)(testStdDev / testLength * 2 * _gDivWidth);
-			int stdTop = 234;
+			int _stdTop = 234;
 			int p100Top = 0;
 			int p75Top = (int)(_gDivHeight / 4);
 			int p50Top = (int)(_gDivWidth / 2);
@@ -146,22 +151,22 @@ namespace CSDataMiner2
 
 			strHTML += "<STYLE  type=\"text/css\">";
 
-			strHTML += "table { border-collapse: collapse; border-color: #c1c1c1; border-spacing: 0; border-style: solid; border-width: 1px 0 0 1px; vertical-align: middle; width: " + _tableWidth + "px; }";
-			strHTML += "th { background-color: #edf2f9; border-color: #b0b7bb; border-style: solid; border-width: 0 1px 1px 0; color: #112277; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: bold; padding: 3px 6px; text-align: center; vertical-align: middle; }";
-			strHTML += "td { background-color: #FFFFFF; border-color: #c1c1c1; border-style: solid; border-width: 0 1px 1px 0; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: normal; padding: 3px 6px; text-align: right; vertical-align: middle; }";
-			strHTML += ".graph { height: " + _gDivHeight + "px; position: relative; width: " + _gDivWidth + "px; }";
-			strHTML += ".bar { background-color: #edf2f9; border: 1px solid #c1c1c1; display: inline-block; margin: 1px; position: relative; vertical-align: baseline; width: " + _barWidth + "px; }";
-			strHTML += ".median { background-color: #FBE2E0; border: 1px solid #9F9F9F; display: inline-block; height: " + _medianHeight + "px; left: " + _medianLeft + "px; margin: 0px; position: absolute; top: 1px; vertical-align: baseline; width: 0px; }";
-			strHTML += ".std { border: 1px solid #9F9F9F; display: inline-block; left: " + _stdLeft + "px; margin: 0px; position: absolute; top: " + _stdLeft + "px; vertical-align: baseline; width: " + _stdWidth + "px; }";
-			strHTML += ".xlabel { border: 1px solid #FFFFFF; display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; margin: 1px; position: relative; text-align: center; vertical-align: baseline; width: " + _barWidth + "px; }";
-			strHTML += ".ylabel { display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; left: 0px; position: absolute; text-align: left; }";
-			strHTML += ".center { text-align: center; }";
-			strHTML += ".left { text-align: left; }";
-			strHTML += ".warning { background-color: #FBE2E0; }";
+			strHTML += "\ntable { border-collapse: collapse; border-color: #c1c1c1; border-spacing: 0; border-style: solid; border-width: 1px 0 0 1px; vertical-align: middle; width: " + _tableWidth + "px; }";
+			strHTML += "\nth { background-color: #edf2f9; border-color: #b0b7bb; border-style: solid; border-width: 0 1px 1px 0; color: #112277; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: bold; padding: 3px 6px; text-align: center; vertical-align: middle; }";
+			strHTML += "\ntd { background-color: #FFFFFF; border-color: #c1c1c1; border-style: solid; border-width: 0 1px 1px 0; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: normal; padding: 3px 6px; text-align: right; vertical-align: middle; }";
+			strHTML += "\n.graph { height: " + _gDivHeight + "px; position: relative; width: " + _gDivWidth + "px; }";
+			strHTML += "\n.bar { background-color: #edf2f9; border: 1px solid #c1c1c1; display: inline-block; margin: 1px; position: relative; vertical-align: baseline; width: " + _barWidth + "px; }";
+			strHTML += "\n.median { background-color: #FBE2E0; border: 1px solid #9F9F9F; display: inline-block; height: " + _medianHeight + "px; left: " + _medianLeft + "px; margin: 0px; position: absolute; top: 1px; vertical-align: baseline; width: 0px; }";
+			strHTML += "\n.std { border: 1px solid #9F9F9F; display: inline-block; left: " + _stdLeft + "px; margin: 0px; position: absolute; top: " + _stdTop + "px; vertical-align: baseline; width: " + _stdWidth + "px; }";
+			strHTML += "\n.xlabel { border: 1px solid #FFFFFF; display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; margin: 1px; position: relative; text-align: center; vertical-align: baseline; width: " + _barWidth + "px; }";
+			strHTML += "\n.ylabel { display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; left: 0px; position: absolute; text-align: left; }";
+			strHTML += "\n.center { text-align: center; }";
+			strHTML += "\n.left { text-align: left; }";
+			strHTML += "\n.warning { background-color: #FBE2E0; }";
 
 			strHTML += "</STYLE>";
 
-			strHTML += "</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
+			strHTML += "</HEAD>\n<BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
 
 			strHTML += "</table><p></p><table>";
 			strHTML += "<tr><th colspan=\"2\">Raw Score</th><th colspan=\"8\">Percent Score Distribution</th></tr>";
@@ -173,13 +178,13 @@ namespace CSDataMiner2
 			}
 			strHTML += "<td ROWSPAN=\"12\" colspan=\"8\"><div><div class=\"graph\">";
 			for (int i = 0; i < 10; i++) {
-				strHTML += "<div style=\"height: " + (int)(studentHistogram [i] / studentHistogram.Max () * 230) + "px\" class=\"bar\"></div>";
+				strHTML += "<div style=\"height: " + ((double)studentHistogram [i] / studentHistogram.Max () * 230) + "px\" class=\"bar\"></div>";
 			}
 			strHTML += "<div class=\"std\"></div>";
 			strHTML += "<div class=\"median\"></div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 100) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 75) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 50) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 100) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 75) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 50) + "%</div>";
 			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 25) + "%</div>";
 		
 			for (int i = 0; i < 10; i++) {
@@ -207,12 +212,10 @@ namespace CSDataMiner2
 				strHTML += "<tr><td>Skew</td><td>&#8592; " + testSkew.ToString ("0.00") + "</td></tr>";
 			else
 				strHTML += "<tr><td>Skew</td><td>&#8594; " + testSkew.ToString ("0.00") + "</td></tr>";
-
 			if (testAlpha < .7 | testAlpha > 1)
 				strHTML += "<tr><td>Alpha</td><td class=\"warning\">" + testAlpha.ToString ("0.00") + "</td></tr>";
 			else
 				strHTML += "<tr><td>Alpha</td><td>" + testAlpha.ToString ("0.00") + "</td></tr>";
-
 			strHTML += "<tr><td>SEM</td><td>" + testSEM.ToString ("0.00") + "</td></tr>";
 
 			/*Notes section
@@ -225,7 +228,6 @@ namespace CSDataMiner2
 			strHTML += "</table><p></p>";
 
 			/*
-
 				'Test Design Section
 
 				strHTML &= "<table>"
@@ -395,7 +397,7 @@ namespace CSDataMiner2
 			strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
 			strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
 			strHTML += "Kelley, T., Ebel, R., & Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
-			strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta’s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
+			strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta\'s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
 			strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
 			strHTML += "Richardson, M. W., & Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
 			strHTML += "Yu, C. H., & Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., & Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
