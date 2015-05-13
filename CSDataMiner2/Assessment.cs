@@ -227,163 +227,167 @@ namespace CSDataMiner2
 
 			strHTML += "</table><p></p>";
 
-			/*
-				'Test Design Section
 
-				strHTML &= "<table>"
-				strHTML &= "<tr><th colspan=\"4\">Item Difficulty</th>" & _
-				"<th>% of Items</th>" & _
-				"<th colspan=\"4\">Item Discrimination</th>" & _
-				"<th colspan=\"1\">% of Items</th></tr>"
+            /* Test Design Section
 
-				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" & _
-				"<td>" & Math.Round(itemDifficulty(2) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" & _
-				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(2) / nNumberColumns * 100, 1) & "</td></tr>"
+            strHTML += "<table>";
+                    
 
-				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" & _
-				"<td>" & Math.Round(itemDifficulty(1) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" & _
-				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(1) / nNumberColumns * 100, 1) & "</td></tr>"
+            strHTML += "<tr><th colspan=\"4\">Item Difficulty</th>" +
+                "<th>% of Items</th>" +
+                "<th colspan=\"4\">Item Discrimination</th>" +
+                "<th colspan=\"1\">% of Items</th></tr>";
 
-				strHTML &= "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" & _
-				"<td>" & Math.Round(itemDifficulty(0) / nNumberColumns * 100, 1) & "</td>" & _
-				"<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" & _
-				"<td colspan=\"1\">" & Math.Round(itemDiscrimination(0) / nNumberColumns * 100, 1) & "</td></tr>"
+            strHTML += "<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" +
+				"<td>" + Math.Round(itemDifficulty(2) / nNumberColumns * 100, 1) + "</td>" +
+				"<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" +
+				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(2) / nNumberColumns * 100, 1) + "</td></tr>";
 
-				strHTML &= "</table><p></p>"
+				strHTML += "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" +
+				"<td>" + Math.Round(itemDifficulty(1) / nNumberColumns * 100, 1) + "</td>" +
+				"<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" +
+				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(1) / nNumberColumns * 100, 1) + "</td></tr>";
 
-				'Item Review Section
+				strHTML += "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" +
+				"<td>" + Math.Round(itemDifficulty(0) / nNumberColumns * 100, 1) + "</td>" +
+				"<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" +
+				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(0) / nNumberColumns * 100, 1) + "</td></tr>";
 
-				'Multiple Choice
-				If hasMC = True Then
-				strHTML &= "<table>"
-				strHTML &= "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>"
+                strHTML += "</table><p></p>";
+			*/
+				
+			//Item Review Section
 
+				//Multiple Choice
+				if (hasMC)
+            {
+				strHTML += "<table>";
+				strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>";
+            }
 
 				For _a = 0 To nNumberColumns - 1
 				If itemStrData(_a, StrData.Type) = "MC" Then
-				strHTML &= "<tr>"
-				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
+				strHTML += "<tr>"
+				strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				End If
 
-				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC1) / nNumberRows * 100, 0) & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC2) / nNumberRows * 100, 0) & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC3) / nNumberRows * 100, 0) & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.MC4) / nNumberRows * 100, 0) & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
-				strHTML &= "</tr>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString("0.00") + "</td>"
+				strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer) + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.MC1) / nNumberRows * 100, 0) + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.MC2) / nNumberRows * 100, 0) + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.MC3) / nNumberRows * 100, 0) + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.MC4) / nNumberRows * 100, 0) + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) + "</td>"
+				strHTML += "</tr>"
 				End If
 				Next
-				strHTML &= "</table>"
-				strHTML &= "<p></p>"
+				strHTML += "</table>"
+				strHTML += "<p></p>"
 				End If
 
 
 				'Multiple Select
 				If hasMS = True Then
-				strHTML &= "<table>"
-				strHTML &= "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>"
+				strHTML += "<table>"
+				strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>"
 
 				For _a = 0 To nNumberColumns - 1
 				If itemStrData(_a, StrData.Type) = "MS" Then
-				strHTML &= "<tr>"
-				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
+				strHTML += "<tr>"
+				strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				End If
 
-				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td><td colspan=\"4\"></td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
-				strHTML &= "</tr>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString("0.00") + "</td>"
+				strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer) + "</td><td colspan=\"4\"></td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) + "</td>"
+				strHTML += "</tr>"
 				End If
 				Next
-				strHTML &= "</table>"
-				strHTML &= "<p></p>"
+				strHTML += "</table>"
+				strHTML += "<p></p>"
 				End If
 
 				'Gridded Response
 
 				If hasGR = True Then
-				strHTML &= "<table>"
-				strHTML &= "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>"
+				strHTML += "<table>"
+				strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>"
 
 				For _a = 0 To nNumberColumns - 1
 				If itemStrData(_a, StrData.Type) = "GR" Then
-				strHTML &= "<tr>"
-				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
+				strHTML += "<tr>"
+				strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				End If
 
-				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString() & "</td>"
-				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer) & "</td>"
-				strHTML &= "<td>" & (100 - ItemDblData(_a, DblData.PV) * 100 - c_CRPassRate(_a) - ItemIntData(_a, IntData.Omissions) / nNumberRows * 100).ToString("0.00") & "</td>"
-				strHTML &= "<td>" & c_CRPassRate(_a).ToString("0.00") & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
-				strHTML &= "</tr>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString() + "</td>"
+				strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer) + "</td>"
+				strHTML += "<td>" + (100 - ItemDblData(_a, DblData.PV) * 100 - c_CRPassRate(_a) - ItemIntData(_a, IntData.Omissions) / nNumberRows * 100).ToString("0.00") + "</td>"
+				strHTML += "<td>" + c_CRPassRate(_a).ToString("0.00") + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) + "</td>"
+				strHTML += "</tr>"
 				End If
 				Next
-				strHTML &= "</table>"
-				strHTML &= "<p></p>"
+				strHTML += "</table>"
+				strHTML += "<p></p>"
 				End If
 
 				'Constructed Response
 				If hasCR = True Then
-				strHTML &= "<table>"
-				strHTML &= "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Mean</th><th>Percent Below</th><th>Percent at or Above</th><th>% Om</th></tr>"
+				strHTML += "<table>"
+				strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Mean</th><th>Percent Below</th><th>Percent at or Above</th><th>% Om</th></tr>"
 
 				For _a = 0 To nNumberColumns - 1
 				If itemStrData(_a, StrData.Type) = "CR" Then
-				strHTML &= "<tr>"
-				strHTML &= "<td>" & _a + 1 & " " & itemStrData(_a, StrData.Type) & "</td>"
+				strHTML += "<tr>"
+				strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
 				If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PV).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
 				End If
 				If ItemDblData(_a, DblData.PBS) < 0.2 Then
-				strHTML &= "<td class=\"warning\">" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				Else
-				strHTML &= "<td>" & ItemDblData(_a, DblData.PBS).ToString("0.00") & "</td>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
 				End If
 
-				strHTML &= "<td>" & ItemDblData(_a, DblData.AIfD).ToString("0.00") & "</td>"
-				strHTML &= "<td class=\"center\">" & itemStrData(_a, StrData.Answer).Substring(0, itemStrData(_a, StrData.Answer).IndexOf(".") + 3) & "</td>"
-				strHTML &= "<td>" & (100 - c_CRPassRate(_a) - (ItemIntData(_a, IntData.Omissions) / nNumberRows * 100)).ToString("0.00") & "</td>"
-				strHTML &= "<td>" & c_CRPassRate(_a).ToString("0.00") & "</td>"
-				strHTML &= "<td>" & Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) & "</td>"
-				strHTML &= "</tr>"
+				strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString("0.00") + "</td>"
+				strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer).Substring(0, itemStrData(_a, StrData.Answer).IndexOf(".") + 3) + "</td>"
+				strHTML += "<td>" + (100 - c_CRPassRate(_a) - (ItemIntData(_a, IntData.Omissions) / nNumberRows * 100)).ToString("0.00") + "</td>"
+				strHTML += "<td>" + c_CRPassRate(_a).ToString("0.00") + "</td>"
+				strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) + "</td>"
+				strHTML += "</tr>"
 				End If
 				Next
-				strHTML &= "</table>"
-				strHTML &= "<p></p>"
+				strHTML += "</table>"
+				strHTML += "<p></p>"
 				End If
 				*/
 
@@ -391,16 +395,16 @@ namespace CSDataMiner2
 
 				
 			strHTML += "<table><tr><th colspan=\"10\">Citations</th></tr><tr><td colspan=\"10\" class=\"left\">";
-			strHTML += "<p>Afifi, A. A., & Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
-			strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing & Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
+			strHTML += "<p>Afifi, A. A., + Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
+			strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing + Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
 			strHTML += "Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>";
 			strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
 			strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
-			strHTML += "Kelley, T., Ebel, R., & Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
+			strHTML += "Kelley, T., Ebel, R., + Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
 			strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta\'s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
 			strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
-			strHTML += "Richardson, M. W., & Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
-			strHTML += "Yu, C. H., & Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., & Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
+			strHTML += "Richardson, M. W., + Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
+			strHTML += "Yu, C. H., + Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., + Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
 			strHTML += "</p></td></tr></table>";
 				
 			strHTML += "</table><p></p>";
