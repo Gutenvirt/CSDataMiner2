@@ -28,6 +28,8 @@ namespace CSDataMiner2
 	{
 		public string Output { get; set; }
 
+        public DataParser dpDataFormat;
+
 		string testName;
 		string[] itemType;
 		string[] itemStandards;
@@ -35,7 +37,10 @@ namespace CSDataMiner2
 
 		float[] studentRawScores;
 		float[] studentPercentScores;
-		int[] studentHistogram;
+		float[] studentHistogram;
+
+        float[] ItemDistrimination;
+        float[] ItemDifficulty;
 
 		int testLength;
 		int studentLength;
@@ -58,7 +63,8 @@ namespace CSDataMiner2
 		public Assessment (string filename)
 		{
 			var dcDataGet = new DataConnection (filename);
-			var dpDataFormat = new DataParser (dcDataGet.RawData);
+			dpDataFormat = new DataParser (dcDataGet.RawData);
+
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
@@ -90,6 +96,9 @@ namespace CSDataMiner2
 			MCFreq = dpDataFormat.GetFrequencies (itemType);
 
 			testAifD = DataAnalyzer.GetAlphaIfDropped (dpDataFormat.BinaryData);
+
+            ItemDifficulty = DataAnalyzer.GetTabDifficulty(itemPBS, testLength);
+            ItemDistrimination = DataAnalyzer.GetTabDiscrimination(itemPvalues, testLength);
 
 			Output += testName + Environment.NewLine;
 			Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
@@ -185,7 +194,7 @@ namespace CSDataMiner2
 			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 100) + "%</div>";
 			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 75) + "%</div>";
 			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 50) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (int)(studentHistogram.Max () / studentLength * 25) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 25) + "%</div>";
 		
 			for (int i = 0; i < 10; i++) {
 				if (i == 9)
@@ -228,35 +237,38 @@ namespace CSDataMiner2
 			strHTML += "</table><p></p>";
 
 
-            /* Test Design Section
+            //Test Design Section
 
             strHTML += "<table>";
-                    
+
+
 
             strHTML += "<tr><th colspan=\"4\">Item Difficulty</th>" +
-                "<th>% of Items</th>" +
-                "<th colspan=\"4\">Item Discrimination</th>" +
-                "<th colspan=\"1\">% of Items</th></tr>";
+                    "<th>% of Items</th>" +
+                    "<th colspan=\"4\">Item Discrimination</th>" +
+                    "<th colspan=\"1\">% of Items</th></tr>";
 
             strHTML += "<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" +
-				"<td>" + Math.Round(itemDifficulty(2) / nNumberColumns * 100, 1) + "</td>" +
+                "<td>" + Math.Round(ItemDifficulty[2] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" +
-				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(2) / nNumberColumns * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[2] / testLength * 100, 1) + "</td></tr>";
 
-				strHTML += "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" +
-				"<td>" + Math.Round(itemDifficulty(1) / nNumberColumns * 100, 1) + "</td>" +
+			strHTML += "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" +
+                "<td>" + Math.Round(ItemDifficulty[1] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" +
-				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(1) / nNumberColumns * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[1] / testLength * 100, 1) + "</td></tr>";
 
-				strHTML += "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" +
-				"<td>" + Math.Round(itemDifficulty(0) / nNumberColumns * 100, 1) + "</td>" +
+			strHTML += "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" +
+                "<td>" + Math.Round(ItemDifficulty[0] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" +
-				"<td colspan=\"1\">" + Math.Round(itemDiscrimination(0) / nNumberColumns * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[0] / testLength * 100, 1) + "</td></tr>";
 
-                strHTML += "</table><p></p>";
-			*/
+            strHTML += "</table><p></p>";
+			
 				
-			//Item Review Section
+			/*
+            
+            //Item Review Section
 
 				//Multiple Choice
 				if (hasMC)
@@ -393,23 +405,25 @@ namespace CSDataMiner2
 
 			//References Section
 
-				
-			strHTML += "<table><tr><th colspan=\"10\">Citations</th></tr><tr><td colspan=\"10\" class=\"left\">";
-			strHTML += "<p>Afifi, A. A., + Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
-			strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing + Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
-			strHTML += "Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>";
-			strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
-			strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
-			strHTML += "Kelley, T., Ebel, R., + Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
-			strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta\'s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
-			strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
-			strHTML += "Richardson, M. W., + Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
-			strHTML += "Yu, C. H., + Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., + Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
-			strHTML += "</p></td></tr></table>";
-				
+				if (GlobalSettings.GenerateReferences)
+                {
+			        strHTML += "<table><tr><th colspan=\"10\">Citations</th></tr><tr><td colspan=\"10\" class=\"left\">";
+			        strHTML += "<p>Afifi, A. A., + Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
+			        strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing + Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
+			        strHTML += "Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>";
+			        strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
+			        strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
+			        strHTML += "Kelley, T., Ebel, R., + Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
+			        strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta\'s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
+			        strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
+			        strHTML += "Richardson, M. W., + Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
+			        strHTML += "Yu, C. H., + Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., + Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
+			        strHTML += "</p></td></tr></table>";
+                }	
 			strHTML += "</table><p></p>";
 			
 			strHTML += "</HTML>";
+
 			return strHTML;
 		}
 	}

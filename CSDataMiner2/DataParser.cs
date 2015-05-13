@@ -24,7 +24,7 @@ using System.Data;
 
 namespace CSDataMiner2
 {
-	class DataParser
+	public class DataParser
 	{
 		public string NullValue = "NaN";
 

@@ -32,6 +32,7 @@ namespace CSDataMiner2
 		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
 
 		public string ErrorString { get; set; }
+        public string File { get; set; }
 
 		public DataConnection (string dbFilename)
 		{
@@ -45,7 +46,8 @@ namespace CSDataMiner2
 			} catch (IOException e) {
 				ErrorString = e.ToString ();
 			}
-		}
+            File = dbFilename;
+        }
 	}
 
 	enum Source

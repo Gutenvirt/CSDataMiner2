@@ -22,20 +22,28 @@ using System;
 
 namespace CSDataMiner2
 {
-	public static class GlobalSettings
-	{
-		public static MethodOfDelete DeleteOption { get; set; }
+    public static class GlobalSettings
+    {
+        public static MethodOfDelete DeleteOption { get; set; }
 
-		public static bool ReplaceCR { get; set; }
+        public static bool ReplaceCR { get; set; }
+
+        public static bool GenerateCSV { get; set; }
+
+        public static bool GenerateHTML { get; set; }
+
+        public static bool GenerateReferences { get; set; }
+
+        public static bool GenerateZScores { get; set; }
 
 
-	}
+    }
 
-	public enum MethodOfDelete
-	{
-		Listwise,
-		Pairwise,
-		ZeroReplace
-	}
+    public enum MethodOfDelete
+    {
+        Listwise,
+        Pairwise,
+        ZeroReplace
+    }
 }
 

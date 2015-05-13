@@ -24,107 +24,135 @@ using System.Windows.Forms;
 
 namespace CSDataMiner2
 {
-	public partial class frmMain : Form
-	{
-		public frmMain ()
-		{
-			InitializeComponent ();
-		}
+    public partial class frmMain : Form
+    {
+        public frmMain()
+        {
+            InitializeComponent();
+        }
 
-		public void SetupChoices ()
-		{
-			if (rbZeroReplace.Checked == true) {
-				GlobalSettings.DeleteOption = MethodOfDelete.ZeroReplace;
-			} else {
-				if (rbListWise.Checked == true) {
-					GlobalSettings.DeleteOption = MethodOfDelete.Listwise;
-				} else {
-					if (rbPairWise.Checked == true) {
-						GlobalSettings.DeleteOption = MethodOfDelete.Pairwise;
-					}
-				}
-			}
-			if (bcConvertCR.Checked == true)
-				GlobalSettings.ReplaceCR = true;
-			else {
-				GlobalSettings.ReplaceCR = false;
-			}
-		}
+        public void SetupChoices()
+        {
+            if (rbZeroReplace.Checked == true)
+            {
+                GlobalSettings.DeleteOption = MethodOfDelete.ZeroReplace;
+            }
+            else
+            {
+                if (rbListWise.Checked == true)
+                {
+                    GlobalSettings.DeleteOption = MethodOfDelete.Listwise;
+                }
+                else
+                {
+                    if (rbPairWise.Checked == true)
+                    {
+                        GlobalSettings.DeleteOption = MethodOfDelete.Pairwise;
+                    }
+                }
+            }
 
-		private void cmdSingle_Click (object sender, EventArgs e)
-		{
-			oFD.ShowDialog ();
-			if (oFD.FileName != null) {
-				SetupChoices (); 
-				var test = new Assessment (oFD.FileName);
-				textBox1.Text = test.Output;
-			}
-		}
+            if (bcConvertCR.Checked)
+                GlobalSettings.ReplaceCR = true;
+            else { GlobalSettings.ReplaceCR = false; }
 
-		private void cmdBatch_Click (object sender, EventArgs e)
-		{
-			textBox1.Text = "Doh!";
-		}
+            if (cbOutCSV.Checked)
+                GlobalSettings.GenerateCSV = true;
+            else { GlobalSettings.GenerateCSV = false; }
 
-		private void cmdExit_Click (object sender, EventArgs e)
-		{
-			Application.Exit ();
-		}
+            if (cbOutHTML.Checked)
+                GlobalSettings.GenerateHTML = true;
+            else { GlobalSettings.GenerateHTML = false; }
 
-		void RbListWiseCheckedChanged (object sender, EventArgs e)
-		{
-			rbListWise.Checked = true;
-			rbPairWise.Checked = false;
-			rbZeroReplace.Checked = false;
-		}
+            if (cbReferences.Checked)
+            {
+                GlobalSettings.GenerateReferences = true;
+                cbOutHTML.Checked = true;
+            }
+            else { GlobalSettings.GenerateReferences = false; }
 
-		void RbZeroReplaceCheckedChanged (object sender, EventArgs e)
-		{
-			rbListWise.Checked = false;
-			rbPairWise.Checked = false;
-			rbZeroReplace.Checked = true;
-		}
+            if (cbZScores.Checked)
+                GlobalSettings.GenerateZScores  = true;
+            else { GlobalSettings.GenerateZScores = false; }
+        }
 
-		void RbPairWiseCheckedChanged (object sender, EventArgs e)
-		{
-			rbListWise.Checked = false;
-			rbPairWise.Checked = true;
-			rbZeroReplace.Checked = false;
-		}
+        private void cmdSingle_Click(object sender, EventArgs e)
+        {
+            oFD.ShowDialog();
+            if (oFD.FileName != null && oFD.FileName.EndsWith (".xlsx"))
+            {
+                SetupChoices();
+                var test = new Assessment(oFD.FileName);
+                textBox1.Text = test.Output;
+                if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(oFD.FileName, test.dpDataFormat.BinaryData); }
+            }
+            else { textBox1.Text += "ERROR: Bad file...\n"; }
+        }
 
-		void BcConvertCRCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        private void cmdBatch_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "Doh!";
+        }
 
-		void CbOutCSVCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        private void cmdExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
 
-		void CbOutHTMLCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        void RbListWiseCheckedChanged(object sender, EventArgs e)
+        {
+            rbListWise.Checked = true;
+            rbPairWise.Checked = false;
+            rbZeroReplace.Checked = false;
+        }
 
-		void CbReferencesCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        void RbZeroReplaceCheckedChanged(object sender, EventArgs e)
+        {
+            rbListWise.Checked = false;
+            rbPairWise.Checked = false;
+            rbZeroReplace.Checked = true;
+        }
 
-		void CbZScoresCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        void RbPairWiseCheckedChanged(object sender, EventArgs e)
+        {
+            rbListWise.Checked = false;
+            rbPairWise.Checked = true;
+            rbZeroReplace.Checked = false;
+        }
 
-		void CbEduphoriaCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
+        void BcConvertCRCheckedChanged(object sender, EventArgs e)
+        {
 
-		void CbPerformMatterCheckedChanged (object sender, EventArgs e)
-		{
-	
-		}
-	}
+        }
+
+        void CbOutCSVCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        void CbOutHTMLCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        void CbReferencesCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        void CbZScoresCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        void CbEduphoriaCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        void CbPerformMatterCheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
