@@ -39,7 +39,7 @@ namespace CSDataMiner2
 		double[] studentPercentScores;
 		double[] studentHistogram;
 
-        double[] ItemDistrimination;
+        double[] ItemDiscrimination;
         double[] ItemDifficulty;
 
 		int testLength;
@@ -89,7 +89,7 @@ namespace CSDataMiner2
 			itemPBS = DataOps.GetPointBiSerial (testStdDev, studentRawScores, fileParser.BinaryData);
 			testStatistics = DataOps.GetDescriptiveStats (studentRawScores);
 			testMean = testStatistics [2];
-			studentHistogram = DataOps.GetStudentHistogramValues (studentRawScores, testLength);
+            studentHistogram = HistogramGen.GetValues(hType.Density, new double[10] { .1, .2, .3, .4, .5, .6, .7, .8, .9, 1 }, studentPercentScores);
 
 			testSkew = DataOps.GetTestSkew (testMean, testStatistics [3], testStdDev);
 
@@ -97,8 +97,8 @@ namespace CSDataMiner2
 
 			testAifD = DataOps.GetAlphaIfDropped (fileParser.BinaryData);
 
-            ItemDifficulty = DataOps.GetTabDifficulty(itemPBS, testLength);
-            ItemDistrimination = DataOps.GetTabDiscrimination(itemPvalues, testLength);
+            ItemDifficulty = HistogramGen.GetValues (hType.Density,new double[3]{.4,.7,1},itemPvalues );
+            ItemDiscrimination = HistogramGen.GetValues(hType.Density, new double[3] { .2, .3, 1 }, itemPBS );
 
 			Output += testName + Environment.NewLine;
 			Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
@@ -130,13 +130,9 @@ namespace CSDataMiner2
 					break;
 				}
 			}
-			Output += Environment.NewLine;
-			Output += "Histogram" + Environment.NewLine;
-			for (int i = 0; i < studentHistogram.GetLength (0); i++) {
-				Output += i + ": " + studentHistogram [i] + Environment.NewLine;
-			}
 
-			Output += HTMLOut ();
+            Output += Environment.NewLine;
+            Output += HTMLOut();
 		}
 
 		public string HTMLOut ()
@@ -251,17 +247,17 @@ namespace CSDataMiner2
             strHTML += "<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" +
                 "<td>" + Math.Round(ItemDifficulty[2] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" +
-                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[2] / testLength * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDiscrimination[2] / testLength * 100, 1) + "</td></tr>";
 
 			strHTML += "<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" +
                 "<td>" + Math.Round(ItemDifficulty[1] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" +
-                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[1] / testLength * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDiscrimination[1] / testLength * 100, 1) + "</td></tr>";
 
 			strHTML += "<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" +
                 "<td>" + Math.Round(ItemDifficulty[0] / testLength * 100, 1) + "</td>" +
 				"<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" +
-                "<td colspan=\"1\">" + Math.Round(ItemDistrimination[0] / testLength * 100, 1) + "</td></tr>";
+                "<td colspan=\"1\">" + Math.Round(ItemDiscrimination[0] / testLength * 100, 1) + "</td></tr>";
 
             strHTML += "</table><p></p>";
 			
