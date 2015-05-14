@@ -24,7 +24,7 @@ using System.Data;
 
 namespace CSDataMiner2
 {
-	public class DataParser
+	public class FileParser
 	{
 		public string NullValue = "NaN";
 
@@ -44,10 +44,10 @@ namespace CSDataMiner2
 
 		public string StatusReport { get; set; }
 
-		public DataFileLocations dfLoc = new DataFileLocations (5, 6, 5);
+		public DataFileSettings dfLoc = new DataFileSettings (5, 6, 5);
 		//General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
-		public DataParser (DataTable InpData)
+		public FileParser (DataTable InpData)
 		{
 			switch (GlobalSettings.DeleteOption) {
 			case MethodOfDelete.Listwise:
@@ -151,7 +151,7 @@ namespace CSDataMiner2
 					string s = ChoiceData [i, j].Replace ("+", "");
 					if (s == NullValue)
 						continue;
-					result [i] += float.Parse (s);
+					result [i] += double.Parse (s);
 				}
 				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
@@ -164,9 +164,9 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public float [,] GetFrequencies (string[] type)
+		public double [,] GetFrequencies (string[] type)
 		{
-			var result = new float[ChoiceData.GetLength (0), 5];
+			var result = new double[ChoiceData.GetLength (0), 5];
 			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
 				if (type [i] != "MC")
 					continue;
@@ -193,11 +193,11 @@ namespace CSDataMiner2
 						continue;
 					}
 				}
-				result [i, 0] = (float)Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 1] = (float)Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 2] = (float)Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 3] = (float)Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 4] = (float)Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 0] = (double)Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 1] = (double)Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 2] = (double)Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 3] = (double)Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
+				result [i, 4] = (double)Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
 			}
 			return result;
 		}

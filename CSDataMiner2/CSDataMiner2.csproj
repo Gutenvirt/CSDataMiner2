@@ -44,9 +44,9 @@
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAnalyzer.cs" />
-    <Compile Include="DataConnection.cs" />
-    <Compile Include="DataParser.cs" />
+    <Compile Include="DataOps.cs" />
+    <Compile Include="FileLoader.cs" />
+    <Compile Include="FileParser.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,7 +77,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Assessment.cs" />
-    <Compile Include="DataFileLocations.cs" />
+    <Compile Include="DataFileSettings.cs" />
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="FileIO.cs" />
   </ItemGroup>

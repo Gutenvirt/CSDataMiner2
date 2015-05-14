@@ -110,72 +110,12 @@ namespace CSDataMiner2
 			};
 		}
 
-
-        public static float[] GetTabDifficulty (float[] pbs, int nColumns)
-        {
-            var result = new float[3];
-
-            for (int i = 0; i < nColumns ; i++)
-            {
-                if (pbs[i] > .3)
-                {
-                    result[2] += 1;
-                }
-                else
-                {
-                    if (pbs[i] <= .2)
-                    {
-                        result[0] += 1;
-                    }
-                    else
-                    {
-                        result[1] += 1;
-                    }
-                }              
-            }
-            result[0] = result[0] / nColumns * 100;
-            result[1] = result[1] / nColumns * 100;
-            result[2] = result[2] / nColumns * 100;
-            return result;
-        }
-
-
-        public static float[] GetTabDiscrimination(float[] pvalues,  int nColumns)
-        {
-            var result = new float[3];
-
-            for (int i = 0; i < nColumns; i++)
-            {
-                if (pvalues[i] > .7)
-                {
-                    result[2] += 1;
-                }
-                else
-                {
-                    if (pvalues[i] < .4)
-                    {
-                        result[0] += 1;
-                    }
-                    else
-                    {
-                        result[1] += 1;
-                    }
-                }
-            }
-            result[0] = result[0] / nColumns * 100;
-            result[1] = result[1] / nColumns * 100;
-            result[2] = result[2] / nColumns * 100;
-            return result;
-        }
-
-
-
-		public static float[] GetStudentHistogramValues (float[] scores, int nColumns)
+		public static int[] GetStudentHistogramValues (float[] scores, int nColumns)
 		{ 
-			var result = new float[10];
+			var result = new int[10];
 
 			for (int i = 0; i < scores.GetLength (0); i++) {
-				double _s = scores [i] / (double)nColumns;
+				double _s = scores [i] / nColumns;
 				if (_s < 0.1)
 					result [0] += 1;
 				if (_s >= 0.1 & _s < 0.2)
@@ -235,10 +175,6 @@ namespace CSDataMiner2
 			return result;
 		}
 
-		public static float GetTestSkew (float testMean, float testMedian, float testSTDev)
-		{
-			return 3 * (testMean - testMedian) / testSTDev;
-		}
 
 		public static float[] GetAlphaIfDropped (byte[,] data)
 		{

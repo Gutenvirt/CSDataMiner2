@@ -28,81 +28,81 @@ namespace CSDataMiner2
 	{
 		public string Output { get; set; }
 
-        public DataParser dpDataFormat;
+        public FileParser fileParser;
 
 		string testName;
 		string[] itemType;
-		string[] itemStandards;
+		string[]itemStandards;
 		string[] itemAnswers;
 
-		float[] studentRawScores;
-		float[] studentPercentScores;
-		float[] studentHistogram;
+		double[] studentRawScores;
+		double[] studentPercentScores;
+		double[] studentHistogram;
 
-        float[] ItemDistrimination;
-        float[] ItemDifficulty;
+        double[] ItemDistrimination;
+        double[] ItemDifficulty;
 
 		int testLength;
 		int studentLength;
 
-		float[] itemPvalues;
-		float testStdDev;
-		float testAlpha;
-		float testMean;
-		float testSkew;
+		double[] itemPvalues;
+		double testStdDev;
+		double testAlpha;
+		double testMean;
+		double testSkew;
 
-		float testSEM;
+		double testSEM;
 
-		float[] itemPBS;
-		float[] testStatistics;
-		float[,] MCFreq;
+		double[] itemPBS;
+		double[] testStatistics;
+		double[,] MCFreq;
 
-		float[] testAifD;
+		double[] testAifD;
 
 
 		public Assessment (string filename)
 		{
-			var dcDataGet = new DataConnection (filename);
-			dpDataFormat = new DataParser (dcDataGet.RawData);
+			var fileLoader = new FileLoader (filename);
+			fileParser = new FileParser (fileLoader.RawData);
 
 			//ListWise -> Removes the student from database if there is ANY omission found.
 			//Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
 			//ZeroReplace -> Same as above but NaN is a replaced with a zero.
 
-			testName = dpDataFormat.TestName;
-			itemType = dpDataFormat.ItemType;
-			itemStandards = dpDataFormat.Standards;
-			itemAnswers = dpDataFormat.AnswerKey;
+			testName = fileParser.TestName;
+			itemType = fileParser.ItemType;
+			itemStandards = fileParser.Standards;
+			itemAnswers = fileParser.AnswerKey;
 
-			studentRawScores = DataAnalyzer.GetRawScores (dpDataFormat.BinaryData);
-			studentPercentScores = DataAnalyzer.GetPercentScores (dpDataFormat.BinaryData);
+			studentRawScores = DataOps.GetRawScores (fileParser.BinaryData);
+			studentPercentScores = DataOps.GetPercentScores (fileParser.BinaryData);
 
 			testLength = itemAnswers.GetLength (0);
 			studentLength = studentRawScores.GetLength (0);
 
-			itemPvalues = DataAnalyzer.GetPValues (dpDataFormat.BinaryData);
-			testStdDev = DataAnalyzer.GetStandardDeviation (dpDataFormat.BinaryData);
-			testAlpha = DataAnalyzer.GetAlpha (itemPvalues, testStdDev);
+			itemPvalues = DataOps.GetPValues (fileParser.BinaryData);
+			testStdDev = DataOps.GetStandardDeviation (fileParser.BinaryData);
+			testAlpha = DataOps.GetAlpha (itemPvalues, testStdDev);
 
-			testSEM = DataAnalyzer.GetStandardErrorOfMeasure (testStdDev, testAlpha);
+			testSEM = DataOps.GetStandardErrorOfMeasure (testStdDev, testAlpha);
 
-			itemPBS = DataAnalyzer.GetPointBiSerial (testStdDev, studentRawScores, dpDataFormat.BinaryData);
-			testStatistics = DataAnalyzer.GetDescriptiveStats (studentRawScores);
+			itemPBS = DataOps.GetPointBiSerial (testStdDev, studentRawScores, fileParser.BinaryData);
+			testStatistics = DataOps.GetDescriptiveStats (studentRawScores);
 			testMean = testStatistics [2];
-			studentHistogram = DataAnalyzer.GetStudentHistogramValues (studentRawScores, testLength);
+			studentHistogram = DataOps.GetStudentHistogramValues (studentRawScores, testLength);
 
-			testSkew = DataAnalyzer.GetTestSkew (testMean, testStatistics [3], testStdDev);
+			testSkew = DataOps.GetTestSkew (testMean, testStatistics [3], testStdDev);
 
-			MCFreq = dpDataFormat.GetFrequencies (itemType);
+			MCFreq = fileParser.GetFrequencies (itemType);
 
-			testAifD = DataAnalyzer.GetAlphaIfDropped (dpDataFormat.BinaryData);
+			testAifD = DataOps.GetAlphaIfDropped (fileParser.BinaryData);
 
-            ItemDifficulty = DataAnalyzer.GetTabDifficulty(itemPBS, testLength);
-            ItemDistrimination = DataAnalyzer.GetTabDiscrimination(itemPvalues, testLength);
+            ItemDifficulty = DataOps.GetTabDifficulty(itemPBS, testLength);
+            ItemDistrimination = DataOps.GetTabDiscrimination(itemPvalues, testLength);
 
 			Output += testName + Environment.NewLine;
 			Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
-			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
+			for (int i = 0; i < fileParser.BinaryData.GetLength (0); i++) {
 				Output += (i + 1) + "\t" + itemType [i] + "\t" + itemStandards [i] + "\t\t" +
 				itemAnswers [i] + "\t" + itemPvalues [i] + "\t" + itemPBS [i] + "\t" + testAifD [i] + Environment.NewLine;
 			}
@@ -119,21 +119,21 @@ namespace CSDataMiner2
 			Output += "Max: " + testStatistics [5] + Environment.NewLine;
 			Output += Environment.NewLine;
 
-			for (int i = 0; i < dpDataFormat.BinaryData.GetLength (0); i++) {
+			for (int i = 0; i < fileParser.BinaryData.GetLength (0); i++) {
 
 				switch (itemType [i]) {
 				case "MC":
 					Output += MCFreq [i, 0] + "\t" + MCFreq [i, 1] + "\t" + MCFreq [i, 2] + "\t" + MCFreq [i, 3] + "\t" + MCFreq [i, 4] + Environment.NewLine;
 					break;
 				case "CR":
-					Output += dpDataFormat.CRAverages [i] + Environment.NewLine;
+					Output += fileParser.CRAverages [i] + Environment.NewLine;
 					break;
 				}
 			}
 			Output += Environment.NewLine;
-			Output += "Histogram (Max:" + studentHistogram.Max () + ")" + Environment.NewLine;
+			Output += "Histogram" + Environment.NewLine;
 			for (int i = 0; i < studentHistogram.GetLength (0); i++) {
-				Output += i + ": " + ((double)studentHistogram [i] / studentHistogram.Max ()) + Environment.NewLine;
+				Output += i + ": " + studentHistogram [i] + Environment.NewLine;
 			}
 
 			Output += HTMLOut ();
@@ -187,14 +187,14 @@ namespace CSDataMiner2
 			}
 			strHTML += "<td ROWSPAN=\"12\" colspan=\"8\"><div><div class=\"graph\">";
 			for (int i = 0; i < 10; i++) {
-				strHTML += "<div style=\"height: " + ((double)studentHistogram [i] / studentHistogram.Max () * 230) + "px\" class=\"bar\"></div>";
+				strHTML += "<div style=\"height: " + (studentHistogram [i] * 230) + "px\" class=\"bar\"></div>";
 			}
 			strHTML += "<div class=\"std\"></div>";
 			strHTML += "<div class=\"median\"></div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 100) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 75) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 50) + "%</div>";
-			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (double)(studentHistogram.Max () / studentLength * 25) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p100Top + "px\">" +(studentHistogram.Max () / studentLength * 100) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p75Top + "px\">" + (studentHistogram.Max () / studentLength * 75) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (studentHistogram.Max () / studentLength * 50) + "%</div>";
+			strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (studentHistogram.Max () / studentLength * 25) + "%</div>";
 		
 			for (int i = 0; i < 10; i++) {
 				if (i == 9)

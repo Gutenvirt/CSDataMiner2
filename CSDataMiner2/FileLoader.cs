@@ -26,7 +26,7 @@ using System.IO;
 
 namespace CSDataMiner2
 {
-	class DataConnection
+	class FileLoader
 	{
 		public DataTable RawData = new DataTable (Guid.NewGuid ().ToString ());
 		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
@@ -34,7 +34,7 @@ namespace CSDataMiner2
 		public string ErrorString { get; set; }
         public string File { get; set; }
 
-		public DataConnection (string dbFilename)
+		public FileLoader (string dbFilename)
 		{
 			try {
 				//IMEX=1 poses a problem, but there are little options available.  It treats all data pulled as a string, so extra parsing is needed later on.

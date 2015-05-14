@@ -84,7 +84,7 @@ namespace CSDataMiner2
                 SetupChoices();
                 var test = new Assessment(oFD.FileName);
                 textBox1.Text = test.Output;
-                if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(oFD.FileName, test.dpDataFormat.BinaryData); }
+                if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(oFD.FileName, test.fileParser.BinaryData); }
             }
             else { textBox1.Text += "ERROR: Bad file...\n"; }
         }
