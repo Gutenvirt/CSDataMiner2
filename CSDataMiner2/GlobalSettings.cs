@@ -36,6 +36,11 @@ namespace CSDataMiner2
 
         public static bool GenerateZScores { get; set; }
 
+        public static bool HasMC { get; set; }
+
+        public static bool HasGR { get; set; }
+
+        public static bool HasCR { get; set; }
 
     }
 

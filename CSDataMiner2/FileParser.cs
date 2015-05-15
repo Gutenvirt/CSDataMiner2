@@ -119,7 +119,11 @@ namespace CSDataMiner2
 
 			char[] VALID_NUMERICS = "0123456789-.".ToCharArray ();
 			char[] VALID_ALPHAS = "ABCDEFGHIJ".ToCharArray ();
-			ItemType = new string[AnswerKey.GetLength (0)]; 
+			ItemType = new string[AnswerKey.GetLength (0)];
+
+            GlobalSettings.HasMC = false ;
+            GlobalSettings.HasGR = false;
+            GlobalSettings.HasCR = false;
 
 			for (int i = 0; i < AnswerKey.GetLength (0); i++) {
 				string s = AnswerKey [i];
@@ -136,6 +140,13 @@ namespace CSDataMiner2
 					}
 				}
 				ItemType [i] = AnswerKey [i] == "NA" ? "MC" : iType;
+                
+                if (ItemType[i] == "MC")
+                    GlobalSettings.HasMC = true;
+                if (ItemType[i] == "GR")
+                    GlobalSettings.HasGR = true;
+                if (ItemType[i] == "CR")
+                    GlobalSettings.HasCR = true;
 			}
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
 			if (GlobalSettings.ReplaceCR)

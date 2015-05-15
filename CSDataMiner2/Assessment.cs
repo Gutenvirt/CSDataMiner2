@@ -111,7 +111,7 @@ namespace CSDataMiner2
             Output += Environment.NewLine + "Descriptive Statistics" + Environment.NewLine;
             Output += "──────────────┬──────────" + Environment.NewLine;
             Output += "Obsvations    │ " + studentLength + Environment.NewLine;
-            Output += "Variables     │ " + testLength  + Environment.NewLine;
+            Output += "Variables     │ " + testLength + Environment.NewLine;
             Output += "──────────────┼──────────" + Environment.NewLine;
             Output += "Standard Dev. │ " + testStdDev.ToString("0.00") + Environment.NewLine;
             Output += "SEM           │ " + testSEM.ToString("0.00") + Environment.NewLine;
@@ -150,9 +150,9 @@ namespace CSDataMiner2
 
             Output += Environment.NewLine;
 
-            if (GlobalSettings.GenerateHTML )
+            if (GlobalSettings.GenerateHTML)
                 System.IO.File.WriteAllText(fileLoader.File.Substring(0, fileLoader.File.LastIndexOf("\\") + 1) + testName.Replace(" ", "_") + ".htm", HTMLOut());
-            
+
         }
 
         public string HTMLOut()
@@ -214,15 +214,15 @@ namespace CSDataMiner2
             strHTML += "<div class=\"ylabel\" style=\"top: " + p50Top + "px\">" + (studentHistogram.Max() / studentLength * 50).ToString("0.0") + "%</div>";
             strHTML += "<div class=\"ylabel\" style=\"top: " + p25Top + "px\">" + (studentHistogram.Max() / studentLength * 25).ToString("0.0") + "%</div>";
 
-            strHTML += "<div class=\"xlabel\">0-10</div>"+
-                        "<div class=\"xlabel\">11-20</div>"+
-                        "<div class=\"xlabel\">21-30</div>"+
-                        "<div class=\"xlabel\">31-40</div>"+
-                        "<div class=\"xlabel\">41-50</div>"+
-                        "<div class=\"xlabel\">51-60</div>"+
-                        "<div class=\"xlabel\">61-70</div>"+
-                        "<div class=\"xlabel\">71-80</div>"+
-                        "<div class=\"xlabel\">81-90</div>"+
+            strHTML += "<div class=\"xlabel\">0-10</div>" +
+                        "<div class=\"xlabel\">11-20</div>" +
+                        "<div class=\"xlabel\">21-30</div>" +
+                        "<div class=\"xlabel\">31-40</div>" +
+                        "<div class=\"xlabel\">41-50</div>" +
+                        "<div class=\"xlabel\">51-60</div>" +
+                        "<div class=\"xlabel\">61-70</div>" +
+                        "<div class=\"xlabel\">71-80</div>" +
+                        "<div class=\"xlabel\">81-90</div>" +
                         "<div class=\"xlabel\">91-100</div>";
             strHTML += "</div></div></tr>";
 
@@ -287,101 +287,107 @@ namespace CSDataMiner2
             //Item Review Section
 
             //Multiple Choice
-
-            strHTML += "<table>";
-            strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>";
-
-            for (int i = 0; i < testLength; i++)
+            if (GlobalSettings.HasMC == true)
             {
-                if (itemType[i] == "MC" | itemType[i] == "MS")
+                strHTML += "<table>";
+                strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>";
+
+                for (int i = 0; i < testLength; i++)
                 {
-                    strHTML += "<tr>";
-                    strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
-                    if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
-                        strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
-                    if (itemPBS[i] < .2)
-                        strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
-                    strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
-                    strHTML += "<td>" + MCFreq[i, 0].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + MCFreq[i, 1].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + MCFreq[i, 2].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + MCFreq[i, 3].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
-                    strHTML += "</tr>";
+                    if (itemType[i] == "MC" | itemType[i] == "MS")
+                    {
+                        strHTML += "<tr>";
+                        strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
+                        if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
+                            strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
+                        if (itemPBS[i] < .2)
+                            strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
+                        strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
+                        strHTML += "<td>" + MCFreq[i, 0].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + MCFreq[i, 1].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + MCFreq[i, 2].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + MCFreq[i, 3].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
+                        strHTML += "</tr>";
+                    }
                 }
+                strHTML += "</table>";
+                strHTML += "<p></p>";
             }
-            strHTML += "</table>";
-            strHTML += "<p></p>";
 
             //Gridded Response
-
-            strHTML += "<table>";
-            strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>";
-
-            for (int i = 0; i < testLength; i++)
+            if (GlobalSettings.HasGR == true)
             {
-                if (itemType[i] == "GR")
+                strHTML += "<table>";
+                strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>";
+
+                for (int i = 0; i < testLength; i++)
                 {
-                    strHTML += "<tr>";
-                    strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
-                    if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
-                        strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
+                    if (itemType[i] == "GR")
+                    {
+                        strHTML += "<tr>";
+                        strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
+                        if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
+                            strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
 
-                    if (itemPBS[i] < .2)
-                        strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
-                    strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
+                        if (itemPBS[i] < .2)
+                            strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
+                        strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
 
-                    strHTML += "<td>" + (100 - fileParser.CRAverages[i] - (MCFreq[i, 4] / studentLength * 100)).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                    strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + (100 - fileParser.CRAverages[i]).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
 
-                    strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
-                    strHTML += "</tr>";
+                        strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
+                        strHTML += "</tr>";
+                    }
                 }
+                strHTML += "</table>";
+                strHTML += "<p></p>";
             }
-            strHTML += "</table>";
-            strHTML += "<p></p>";
 
-            strHTML += "<table>";
-            strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>";
-
-            for (int i = 0; i < testLength; i++)
+            if (GlobalSettings.HasCR == true)
             {
-                if (itemType[i] == "CR")
+                strHTML += "<table>";
+                strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>";
+
+                for (int i = 0; i < testLength; i++)
                 {
-                    strHTML += "<tr>";
-                    strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
-                    if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
-                        strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
+                    if (itemType[i] == "CR")
+                    {
+                        strHTML += "<tr>";
+                        strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
+                        if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
+                            strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
 
-                    if (itemPBS[i] < .2)
-                        strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
-                    else
-                        strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
-                    strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
-                    strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
+                        if (itemPBS[i] < .2)
+                            strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
+                        else
+                            strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
+                        strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
 
-                    strHTML += "<td>" + (100-fileParser.CRAverages[i]-(MCFreq[i,4]/studentLength *100)).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                    strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
+                        strHTML += "<td>" + (100 - fileParser.CRAverages[i]).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                        strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
 
-                    strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
-                    strHTML += "</tr>";
+                        strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
+                        strHTML += "</tr>";
+                    }
                 }
+                strHTML += "</table>";
+                strHTML += "<p></p>";
             }
-            strHTML += "</table>";
-            strHTML += "<p></p>";
-
             //References Section
 
             if (GlobalSettings.GenerateReferences)
