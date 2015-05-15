@@ -1,4 +1,4 @@
-//
+﻿//
 //  Assessment.cs
 //
 //  Author:
@@ -101,22 +101,29 @@ namespace CSDataMiner2
 
             Output += testName + Environment.NewLine;
             Output += "No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine;
+            Output += "──────────────────────────────────────────────────────────────────────────────" + Environment.NewLine;
             for (int i = 0; i < fileParser.BinaryData.GetLength(0); i++)
             {
                 Output += (i + 1) +
-                    "\t" + itemType[i] + "\t" + itemStandards[i] + "\t\t" + itemAnswers[i] + "\t" + itemPvalues[i].ToString("0.00") + "\t" + itemPBS[i].ToString("0.00") + "\t" + testAifD[i].ToString("0.00") + Environment.NewLine;
+                    "\t" + itemType[i] + "\t" + itemStandards[i] + "\t\t" + itemAnswers[i] + "\t│" + itemPvalues[i].ToString("0.00") + "\t" + itemPBS[i].ToString("0.00") + "\t" + testAifD[i].ToString("0.00") + Environment.NewLine;
             }
 
             Output += Environment.NewLine + "Descriptive Statistics" + Environment.NewLine;
-            Output += "STD: " + testStdDev.ToString("0.00") + Environment.NewLine;
-            Output += "SEM: " + testSEM.ToString("0.00") + Environment.NewLine;
-            Output += "Alp: " + testAlpha.ToString("0.00") + Environment.NewLine;
-            Output += "Min: " + testStatistics[0].ToString("0.00") + Environment.NewLine;
-            Output += "Q1 : " + testStatistics[1].ToString("0.00") + Environment.NewLine;
-            Output += "Mea: " + testStatistics[2].ToString("0.00") + Environment.NewLine;
-            Output += "Med: " + testStatistics[3].ToString("0.00") + Environment.NewLine;
-            Output += "Q3 : " + testStatistics[4].ToString("0.00") + Environment.NewLine;
-            Output += "Max: " + testStatistics[5].ToString("0.00") + Environment.NewLine;
+            Output += "──────────────┬──────────" + Environment.NewLine;
+            Output += "Obsvations    │ " + studentLength + Environment.NewLine;
+            Output += "Variables     │ " + testLength  + Environment.NewLine;
+            Output += "──────────────┼──────────" + Environment.NewLine;
+            Output += "Standard Dev. │ " + testStdDev.ToString("0.00") + Environment.NewLine;
+            Output += "SEM           │ " + testSEM.ToString("0.00") + Environment.NewLine;
+            Output += "Test Alpha    │ " + testAlpha.ToString("0.00") + Environment.NewLine;
+            Output += "──────────────┼──────────" + Environment.NewLine;
+            Output += "Minimum       │ " + testStatistics[0].ToString("0.00") + Environment.NewLine;
+            Output += "Quartile 1    │ " + testStatistics[1].ToString("0.00") + Environment.NewLine;
+            Output += "Mean          │ " + testStatistics[2].ToString("0.00") + Environment.NewLine;
+            Output += "Median        │ " + testStatistics[3].ToString("0.00") + Environment.NewLine;
+            Output += "Qquartile 3   │ " + testStatistics[4].ToString("0.00") + Environment.NewLine;
+            Output += "Maximum       │ " + testStatistics[5].ToString("0.00") + Environment.NewLine;
+            Output += "──────────────┴──────────" + Environment.NewLine;
             Output += Environment.NewLine;
 
             for (int i = 0; i < fileParser.BinaryData.GetLength(0); i++)
@@ -142,7 +149,10 @@ namespace CSDataMiner2
             }
 
             Output += Environment.NewLine;
-            Output += HTMLOut();
+
+            if (GlobalSettings.GenerateHTML )
+                System.IO.File.WriteAllText(fileLoader.File.Substring(0, fileLoader.File.LastIndexOf("\\") + 1) + testName.Replace(" ", "_") + ".htm", HTMLOut());
+            
         }
 
         public string HTMLOut()
@@ -166,22 +176,22 @@ namespace CSDataMiner2
 
             strHTML += "<STYLE  type=\"text/css\">";
 
-            strHTML += "\ntable { border-collapse: collapse; border-color: #c1c1c1; border-spacing: 0; border-style: solid; border-width: 1px 0 0 1px; vertical-align: middle; width: " + _tableWidth + "px; }";
-            strHTML += "\nth { background-color: #edf2f9; border-color: #b0b7bb; border-style: solid; border-width: 0 1px 1px 0; color: #112277; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: bold; padding: 3px 6px; text-align: center; vertical-align: middle; }";
-            strHTML += "\ntd { background-color: #FFFFFF; border-color: #c1c1c1; border-style: solid; border-width: 0 1px 1px 0; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: normal; padding: 3px 6px; text-align: right; vertical-align: middle; }";
-            strHTML += "\n.graph { height: " + _gDivHeight + "px; position: relative; width: " + _gDivWidth + "px; }";
-            strHTML += "\n.bar { background-color: #edf2f9; border: 1px solid #c1c1c1; display: inline-block; margin: 1px; position: relative; vertical-align: baseline; width: " + _barWidth + "px; }";
-            strHTML += "\n.median { background-color: #FBE2E0; border: 1px solid #9F9F9F; display: inline-block; height: " + _medianHeight + "px; left: " + _medianLeft + "px; margin: 0px; position: absolute; top: 1px; vertical-align: baseline; width: 0px; }";
-            strHTML += "\n.std { border: 1px solid #9F9F9F; display: inline-block; left: " + _stdLeft + "px; margin: 0px; position: absolute; top: " + _stdTop + "px; vertical-align: baseline; width: " + _stdWidth + "px; }";
-            strHTML += "\n.xlabel { border: 1px solid #FFFFFF; display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; margin: 1px; position: relative; text-align: center; vertical-align: baseline; width: " + _barWidth + "px; }";
-            strHTML += "\n.ylabel { display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; left: 0px; position: absolute; text-align: left; }";
-            strHTML += "\n.center { text-align: center; }";
-            strHTML += "\n.left { text-align: left; }";
-            strHTML += "\n.warning { background-color: #FBE2E0; }";
+            strHTML += "table { border-collapse: collapse; border-color: #c1c1c1; border-spacing: 0; border-style: solid; border-width: 1px 0 0 1px; vertical-align: middle; width: " + _tableWidth + "px; }";
+            strHTML += "th { background-color: #edf2f9; border-color: #b0b7bb; border-style: solid; border-width: 0 1px 1px 0; color: #112277; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: bold; padding: 3px 6px; text-align: center; vertical-align: middle; }";
+            strHTML += "td { background-color: #FFFFFF; border-color: #c1c1c1; border-style: solid; border-width: 0 1px 1px 0; font-family: Arial, Helvetica, Helv; font-size: small; font-style: normal; font-weight: normal; padding: 3px 6px; text-align: right; vertical-align: middle; }";
+            strHTML += ".graph { height: " + _gDivHeight + "px; position: relative; width: " + _gDivWidth + "px; }";
+            strHTML += ".bar { background-color: #edf2f9; border: 1px solid #c1c1c1; display: inline-block; margin: 1px; position: relative; vertical-align: baseline; width: " + _barWidth + "px; }";
+            strHTML += ".median { background-color: #FBE2E0; border: 1px solid #9F9F9F; display: inline-block; height: " + _medianHeight + "px; left: " + _medianLeft + "px; margin: 0px; position: absolute; top: 1px; vertical-align: baseline; width: 0px; }";
+            strHTML += ".std { border: 1px solid #9F9F9F; display: inline-block; left: " + _stdLeft + "px; margin: 0px; position: absolute; top: " + _stdTop + "px; vertical-align: baseline; width: " + _stdWidth + "px; }";
+            strHTML += ".xlabel { border: 1px solid #FFFFFF; display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; margin: 1px; position: relative; text-align: center; vertical-align: baseline; width: " + _barWidth + "px; }";
+            strHTML += ".ylabel { display: inline-block; font-family: Arial, Helvetica, Helv; font-size: x-small; font-style: normal; font-weight: normal; left: 0px; position: absolute; text-align: left; }";
+            strHTML += ".center { text-align: center; }";
+            strHTML += ".left { text-align: left; }";
+            strHTML += ".warning { background-color: #FBE2E0; }";
 
             strHTML += "</STYLE>";
 
-            strHTML += "</HEAD>\n<BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
+            strHTML += "</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>";
 
             strHTML += "</table><p></p><table>";
             strHTML += "<tr><th colspan=\"2\">Raw Score</th><th colspan=\"8\">Percent Score Distribution</th></tr>";
@@ -331,7 +341,7 @@ namespace CSDataMiner2
                     strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
                     strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
 
-                    strHTML += "<td>" + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    strHTML += "<td>" + (100 - fileParser.CRAverages[i] - (MCFreq[i, 4] / studentLength * 100)).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
 
                     strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
@@ -341,89 +351,52 @@ namespace CSDataMiner2
             strHTML += "</table>";
             strHTML += "<p></p>";
 
-            /* 
-            
-               'Gridded Response
+            strHTML += "<table>";
+            strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>";
 
-               
-               strHTML += "<table>"
+            for (int i = 0; i < testLength; i++)
+            {
+                if (itemType[i] == "CR")
+                {
+                    strHTML += "<tr>";
+                    strHTML += "<td>" + (i + 1) + " " + itemType[i] + "</td>";
+                    if (itemPvalues[i] < .2 | itemPvalues[i] > .9)
+                        strHTML += "<td class=\"warning\">" + itemPvalues[i].ToString("0.00") + "</td>";
+                    else
+                        strHTML += "<td>" + itemPvalues[i].ToString("0.00") + "</td>";
 
-               For _a = 0 To nNumberColumns - 1
-               If itemStrData(_a, StrData.Type) = "GR" Then
-             * 
-               strHTML += "<tr>"
-               strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
-             * 
-               If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-               strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
-               Else
-               strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
-               End If
-               If ItemDblData(_a, DblData.PBS) < 0.2 Then
-               strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
-               Else
-               strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
-               End If
+                    if (itemPBS[i] < .2)
+                        strHTML += "<td class=\"warning\">" + itemPBS[i].ToString("0.00") + "</td>";
+                    else
+                        strHTML += "<td>" + itemPBS[i].ToString("0.00") + "</td>";
+                    strHTML += "<td>" + testAifD[i].ToString("0.00") + "</td>";
+                    strHTML += "<td class=\"center\">" + itemAnswers[i] + "</td>";
 
-               strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString() + "</td>"
-             * 
-               strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer) + "</td>"
-             * 
-               
-               End If
-               Next
-               strHTML += "</table>"
-               strHTML += "<p></p>"
-               End If
+                    strHTML += "<td>" + (100-fileParser.CRAverages[i]-(MCFreq[i,4]/studentLength *100)).ToString("0.00") + "</td>"; //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    strHTML += "<td>" + fileParser.CRAverages[i].ToString("0.00") + "</td>";
 
-               'Constructed Response
-               If hasCR = True Then
-               strHTML += "<table>"
-               strHTML += "<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Mean</th><th>Percent Below</th><th>Percent at or Above</th><th>% Om</th></tr>"
-
-               For _a = 0 To nNumberColumns - 1
-               If itemStrData(_a, StrData.Type) = "CR" Then
-               strHTML += "<tr>"
-               strHTML += "<td>" +a + 1 + " " + itemStrData(_a, StrData.Type) + "</td>"
-               If ItemDblData(_a, DblData.PV) < 0.2 Or ItemDblData(_a, DblData.PV) > 0.9 Then
-               strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
-               Else
-               strHTML += "<td>" + ItemDblData(_a, DblData.PV).ToString("0.00") + "</td>"
-               End If
-               If ItemDblData(_a, DblData.PBS) < 0.2 Then
-               strHTML += "<td class=\"warning\">" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
-               Else
-               strHTML += "<td>" + ItemDblData(_a, DblData.PBS).ToString("0.00") + "</td>"
-               End If
-
-               strHTML += "<td>" + ItemDblData(_a, DblData.AIfD).ToString("0.00") + "</td>"
-               strHTML += "<td class=\"center\">" + itemStrData(_a, StrData.Answer).Substring(0, itemStrData(_a, StrData.Answer).IndexOf(".") + 3) + "</td>"
-               strHTML += "<td>" + (100 - c_CRPassRate(_a) - (ItemIntData(_a, IntData.Omissions) / nNumberRows * 100)).ToString("0.00") + "</td>"
-               strHTML += "<td>" + c_CRPassRate(_a).ToString("0.00") + "</td>"
-               strHTML += "<td>" + Math.Round(ItemIntData(_a, IntData.Omissions) / nNumberRows * 100, 2) + "</td>"
-               strHTML += "</tr>"
-               End If
-               Next
-               strHTML += "</table>"
-               strHTML += "<p></p>"
-               End If
-               */
+                    strHTML += "<td>" + MCFreq[i, 4].ToString("0.00") + "</td>";
+                    strHTML += "</tr>";
+                }
+            }
+            strHTML += "</table>";
+            strHTML += "<p></p>";
 
             //References Section
 
             if (GlobalSettings.GenerateReferences)
             {
                 strHTML += "<table><tr><th colspan=\"10\">Citations</th></tr><tr><td colspan=\"10\" class=\"left\">";
-                strHTML += "<p>Afifi, A. A., + Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
+                strHTML += "<p>Afifi, A. A., & Elashoff, R. M. (1966). Missing observations in multivariate statistics I. Review of the literature. <em>Journal of the American Statistical Association, </em> 61(315), 595-604.<br></br>";
                 strHTML += "Brown, J. D. (2001). Point-biserial correlation coefficients. <em>JALT Testing + Evaluation SIG Newsletter, </em> 5(3), 12-15.<br></br>";
                 strHTML += "Brown, S. (2011). Measures of shape: Skewness and Kurtosis. Retrieved on December, 31, 2014.<br></br>";
                 strHTML += "Ebel, R. L. (1950). Construction and validation of educational tests. <em>Review of Educational Research,</em> 87-97.<br></br>";
                 strHTML += "Ebel, R. L. (1965). Confidence Weighting and Test Reliability. <em>Journal of Educational Measurement,</em> 2(1), 49-57.<br></br>";
-                strHTML += "Kelley, T., Ebel, R., + Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
+                strHTML += "Kelley, T., Ebel, R., & Linacre, J. M. (2002). Item discrimination indices. <em>Rasch Measurement Transactions,</em> 16(3), 883-884.<br></br>";
                 strHTML += "Krishnan, V. (2013). The Early Child Development Instrument (EDI): An item analysis using Classical Test Theory (CTT) on Alberta\'s data. <em>Early Child Mapping (ECMap) Project Alberta, Community-University Partnership (CUP), Faculty of Extension, University of Alberta, Edmonton, Alberta.</em><br></br>";
                 strHTML += "Matlock-Hetzel, S. (1997). Basic Concepts in Item and Test Analysis.<br></br>Pearson, K. (1895). Contributions to the mathematical theory of evolution. II. Skew variation in homogeneous material. <em>Philosophical Transactions of the Royal Society of London. A, </em>343-414.<br></br>";
-                strHTML += "Richardson, M. W., + Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
-                strHTML += "Yu, C. H., + Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., + Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
+                strHTML += "Richardson, M. W., & Stalnaker, J. M. (1933). A note on the use of bi-serial r in test research. <em>The Journal of General Psychology,</em> 8(2), 463-465.<br></br>";
+                strHTML += "Yu, C. H., & Ds, P. (2012). A Simple Guide to the Item Response Theory (IRT) and Rasch Modeling.<br></br>Zeng, J., + Wyse, A. (2009). Introduction to Classical Test Theory. <em>Michigan, Washington, US.</em>";
                 strHTML += "</p></td></tr></table>";
             }
             strHTML += "</table><p></p>";
