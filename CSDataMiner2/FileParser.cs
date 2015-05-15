@@ -42,6 +42,8 @@ namespace CSDataMiner2
 
 		public string TestName { get; set; }
 
+        public int NumberDroppedStudents { get; set; }
+
 		public string StatusReport { get; set; }
 
 		public DataFileSettings dfLoc = new DataFileSettings (5, 6, 5);
@@ -66,7 +68,7 @@ namespace CSDataMiner2
 			//Depending on the options, listwise deletions must be completed first since it changes the size of the datatable and
 			//ultimately the bounds of the CHOCIE and BINARY 2D array created later.
 			char[] INVALID_CHARACTERS = "!@#$%NY".ToCharArray ();
-			int NumberDroppedStudents = 0;
+			NumberDroppedStudents = 0;
 
 			for (int i = InpData.Rows.Count - 1; i >= dfLoc.FirstDataRow; i--) {
 				for (int j = InpData.Columns.Count - dfLoc.LastDataCol - 1; j > dfLoc.FirstDataCol; j--) {
@@ -100,14 +102,14 @@ namespace CSDataMiner2
 					ChoiceData [i, j] = InpData.Rows [j + dfLoc.FirstDataRow].ItemArray [i + dfLoc.FirstDataCol].ToString ().Trim ();
 
 					if (ChoiceData [i, j].IndexOf ("+") == 0) {
-						BinaryData [i, j] = 1;
+                        BinaryData[i, j] = 1;
 						AnswerKey [i] = ChoiceData [i, j].Replace ("+", "");
 					} else {
 						if (ChoiceData [i, j].Length < 1) {
 							ChoiceData [i, j] = NullValue;
-							BinaryData [i, j] = (byte)(GlobalSettings.DeleteOption == MethodOfDelete.ZeroReplace ? 0 : 255);
+							BinaryData [i, j] = (byte)(GlobalSettings.DeleteOption == MethodOfDelete.ZeroReplace ? 0  : 255 );
 						} else {
-							BinaryData [i, j] = 0;
+							BinaryData [i, j] = 0 ;
 						}
 					}
 				}
@@ -158,46 +160,8 @@ namespace CSDataMiner2
 					string s = ChoiceData [i, j].Replace ("+", "");
 					if (s == NullValue)
 						continue;
-					BinaryData [i, j] = (byte)(double.Parse (s) >= result [i] ? 1 : 0);
+					BinaryData [i, j] = (byte)(double.Parse (s) >= result [i] ? 1  : 0 );
 				}
-			}
-			return result;
-		}
-
-		public double [,] GetFrequencies (string[] type)
-		{
-			var result = new double[ChoiceData.GetLength (0), 5];
-			for (int i = 0; i < ChoiceData.GetLength (0); i++) {
-				if (type [i] != "MC")
-					continue;
-				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
-					string s = ChoiceData [i, j].Replace ("+", "");
-					if (s == "A" | s == "F") {
-						result [i, 0] += 1;
-						continue;
-					}
-					if (s == "B" | s == "G") {
-						result [i, 1] += 1;
-						continue;
-					}
-					if (s == "C" | s == "H") {
-						result [i, 2] += 1;
-						continue;
-					}
-					if (s == "D" | s == "J") {
-						result [i, 3] += 1;
-						continue;
-					}
-					if (s == NullValue) {
-						result [i, 4] += 1;
-						continue;
-					}
-				}
-				result [i, 0] = (double)Math.Round (result [i, 0] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 1] = (double)Math.Round (result [i, 1] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 2] = (double)Math.Round (result [i, 2] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 3] = (double)Math.Round (result [i, 3] / ChoiceData.GetLength (1) * 100, 1);
-				result [i, 4] = (double)Math.Round (result [i, 4] / ChoiceData.GetLength (1) * 100, 1);
 			}
 			return result;
 		}

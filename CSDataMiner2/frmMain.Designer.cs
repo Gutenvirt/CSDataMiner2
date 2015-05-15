@@ -43,6 +43,7 @@
             this.cbEduphoria = new System.Windows.Forms.CheckBox();
             this.cbPerformMatter = new System.Windows.Forms.CheckBox();
             this.cmdExit = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // oFD
@@ -56,7 +57,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(877, 177);
+            this.textBox1.Size = new System.Drawing.Size(877, 270);
             this.textBox1.TabIndex = 0;
             // 
             // rbListWise
@@ -207,11 +208,23 @@
             this.cmdExit.UseVisualStyleBackColor = true;
             this.cmdExit.Click += new System.EventHandler(this.cmdExit_Click);
             // 
+            // textBox2
+            // 
+            this.textBox2.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox2.Location = new System.Drawing.Point(12, 407);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox2.Size = new System.Drawing.Size(877, 66);
+            this.textBox2.TabIndex = 14;
+            this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(901, 321);
+            this.ClientSize = new System.Drawing.Size(901, 485);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.cmdExit);
             this.Controls.Add(this.cbPerformMatter);
             this.Controls.Add(this.cbEduphoria);
@@ -251,6 +264,7 @@
 		private System.Windows.Forms.CheckBox cbEduphoria;
 		private System.Windows.Forms.CheckBox cbPerformMatter;
 		private System.Windows.Forms.Button cmdExit;
+        private System.Windows.Forms.TextBox textBox2;
 	}
 }
 

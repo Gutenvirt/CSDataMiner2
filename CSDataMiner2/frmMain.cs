@@ -154,5 +154,39 @@ namespace CSDataMiner2
         {
 
         }
+
+        private void textBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return )
+            {
+                string[] cmd = textBox2.Text.Split(new char[] { ' ', ',', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                for (int i = 0; i < cmd.GetLength(0); i++)
+                {
+                    string _c = cmd[0];
+                    
+                    switch (_c)
+                    {
+                        case "HistogramGen":
+                            for (int j = 1; j < cmd.GetLength(0); j++ )
+                            {
+                                _c = cmd[j];
+                                switch (_c)
+                                {
+                                    case "Frequency":
+                                        
+                                        break;
+                                }
+                            }
+                                break;
+                    }
+                }
+            
+            }
+
+
+
+            textBox2.Text = "";
+        }
     }
 }

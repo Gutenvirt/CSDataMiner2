@@ -44,7 +44,9 @@
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataOps.cs" />
+    <Compile Include="ChoiceDataOps.cs" />
+    <Compile Include="CommandParser.cs" />
+    <Compile Include="BinDataOps.cs" />
     <Compile Include="FileLoader.cs" />
     <Compile Include="FileParser.cs" />
     <Compile Include="frmMain.cs">

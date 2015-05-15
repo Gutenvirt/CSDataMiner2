@@ -36,23 +36,28 @@ namespace CSDataMiner2
             }
             if (type == hType.Density)
             {
-                double max = 1/result.Max();
-                for (int i = 0 ; i < result.GetLength(0); i++)
+                double max = 1 / result.Max();
+                for (int i = 0; i < result.GetLength(0); i++)
                 {
-                    result[i] = result[i]*max;
+                    result[i] = result[i] * max;
                 }
-                return result;
             }
-            else
-            {
-                return result;
-            }
+            if (type == hType.Percent)
+                {
+                    double total = 1 / (double)data.GetLength(0);
+                    for (int i = 0; i < result.GetLength(0); i++)
+                    {
+                        result[i] = result[i] * total;
+                    }
+                }
+        return result;
         }
     }
 
     public enum hType
     {
+        Density,
         Frequency,
-        Density
+        Percent
     }
 }
