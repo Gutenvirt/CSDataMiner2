@@ -20,12 +20,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace CSDataMiner2
 {
     public partial class frmMain : Form
     {
+
+        public Assessment test;
+
         public frmMain()
         {
             InitializeComponent();
@@ -82,7 +86,7 @@ namespace CSDataMiner2
             if (oFD.FileName != null && oFD.FileName.EndsWith (".xlsx"))
             {
                 SetupChoices();
-                var test = new Assessment(oFD.FileName);
+                test = new Assessment(oFD.FileName);
                 textBox1.Text = test.Output;
                 if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(oFD.FileName, test.fileParser.BinaryData); }
             }
@@ -120,46 +124,13 @@ namespace CSDataMiner2
             rbZeroReplace.Checked = false;
         }
 
-        void BcConvertCRCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbOutCSVCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbOutHTMLCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbReferencesCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbZScoresCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbEduphoriaCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        void CbPerformMatterCheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void textBox2_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return )
             {
-                string[] cmd = textBox2.Text.Split(new char[] { ' ', ',', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                textBox2.Text = textBox2.Text.ToLower();
+                string[] cmd = textBox2.Text.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+                textBox2.Text = "";
                 
                 for (int i = 0; i < cmd.GetLength(0); i++)
                 {
@@ -167,26 +138,14 @@ namespace CSDataMiner2
                     
                     switch (_c)
                     {
-                        case "HistogramGen":
-                            for (int j = 1; j < cmd.GetLength(0); j++ )
-                            {
-                                _c = cmd[j];
-                                switch (_c)
-                                {
-                                    case "Frequency":
-                                        
-                                        break;
-                                }
-                            }
-                                break;
+                        case "hist":
+                            HistogramGen.Parse(cmd[1]);
+                            textBox1.Text = HistogramGen.MsgQueue;
+                            cmd = new string[] { };
+                            break;
                     }
                 }
-            
             }
-
-
-
-            textBox2.Text = "";
         }
     }
 }

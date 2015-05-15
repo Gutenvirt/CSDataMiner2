@@ -106,7 +106,6 @@
             this.bcConvertCR.TabIndex = 4;
             this.bcConvertCR.Text = "Convert CR to Dichotomy";
             this.bcConvertCR.UseVisualStyleBackColor = true;
-            this.bcConvertCR.CheckedChanged += new System.EventHandler(this.BcConvertCRCheckedChanged);
             // 
             // cbOutCSV
             // 
@@ -117,7 +116,6 @@
             this.cbOutCSV.TabIndex = 5;
             this.cbOutCSV.Text = "Ouput 0/1 CSV Data File";
             this.cbOutCSV.UseVisualStyleBackColor = true;
-            this.cbOutCSV.CheckedChanged += new System.EventHandler(this.CbOutCSVCheckedChanged);
             // 
             // cbOutHTML
             // 
@@ -130,7 +128,6 @@
             this.cbOutHTML.TabIndex = 6;
             this.cbOutHTML.Text = "Output HTML Report";
             this.cbOutHTML.UseVisualStyleBackColor = true;
-            this.cbOutHTML.CheckedChanged += new System.EventHandler(this.CbOutHTMLCheckedChanged);
             // 
             // cbZScores
             // 
@@ -141,7 +138,6 @@
             this.cbZScores.TabIndex = 7;
             this.cbZScores.Text = "Output Z-Scores CSV";
             this.cbZScores.UseVisualStyleBackColor = true;
-            this.cbZScores.CheckedChanged += new System.EventHandler(this.CbZScoresCheckedChanged);
             // 
             // cbReferences
             // 
@@ -152,7 +148,6 @@
             this.cbReferences.TabIndex = 8;
             this.cbReferences.Text = "Append References";
             this.cbReferences.UseVisualStyleBackColor = true;
-            this.cbReferences.CheckedChanged += new System.EventHandler(this.CbReferencesCheckedChanged);
             // 
             // cmdSingle
             // 
@@ -185,7 +180,6 @@
             this.cbEduphoria.TabIndex = 11;
             this.cbEduphoria.Text = "Eduphoria Source";
             this.cbEduphoria.UseVisualStyleBackColor = true;
-            this.cbEduphoria.CheckedChanged += new System.EventHandler(this.CbEduphoriaCheckedChanged);
             // 
             // cbPerformMatter
             // 
@@ -196,7 +190,6 @@
             this.cbPerformMatter.TabIndex = 12;
             this.cbPerformMatter.Text = "Other Source";
             this.cbPerformMatter.UseVisualStyleBackColor = true;
-            this.cbPerformMatter.CheckedChanged += new System.EventHandler(this.CbPerformMatterCheckedChanged);
             // 
             // cmdExit
             // 

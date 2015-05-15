@@ -140,6 +140,7 @@ namespace CSDataMiner2
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
 			if (GlobalSettings.ReplaceCR)
 				CRAverages = ConvertConstructedResponse ();
+
 		}
 
 
