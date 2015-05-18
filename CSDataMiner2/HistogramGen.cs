@@ -78,16 +78,12 @@ namespace CSDataMiner2
                     if (j == 0)
                     {
                         if (data[i] <= cutoffs[j])
-                        {
                             result[j] += 1;
-                        }
                     }
                     else
                     {
                         if (data[i] > cutoffs[j - 1] && data[i] <= cutoffs[j])
-                        {
                             result[j] += 1;
-                        }
                     }
                 }
             }

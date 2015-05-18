@@ -44,6 +44,7 @@
             this.cbPerformMatter = new System.Windows.Forms.CheckBox();
             this.cmdExit = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.cbThirds = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // oFD
@@ -53,11 +54,11 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(12, 131);
+            this.textBox1.Location = new System.Drawing.Point(12, 145);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(877, 270);
+            this.textBox1.Size = new System.Drawing.Size(877, 256);
             this.textBox1.TabIndex = 0;
             // 
             // rbListWise
@@ -89,9 +90,9 @@
             this.rbZeroReplace.AutoSize = true;
             this.rbZeroReplace.Location = new System.Drawing.Point(15, 60);
             this.rbZeroReplace.Name = "rbZeroReplace";
-            this.rbZeroReplace.Size = new System.Drawing.Size(98, 17);
+            this.rbZeroReplace.Size = new System.Drawing.Size(112, 17);
             this.rbZeroReplace.TabIndex = 3;
-            this.rbZeroReplace.Text = "Omitted to Zero";
+            this.rbZeroReplace.Text = "Replace with Zero";
             this.rbZeroReplace.UseVisualStyleBackColor = true;
             this.rbZeroReplace.Click += new System.EventHandler(this.RbZeroReplaceCheckedChanged);
             // 
@@ -132,7 +133,7 @@
             // cbZScores
             // 
             this.cbZScores.AutoSize = true;
-            this.cbZScores.Location = new System.Drawing.Point(242, 95);
+            this.cbZScores.Location = new System.Drawing.Point(242, 108);
             this.cbZScores.Name = "cbZScores";
             this.cbZScores.Size = new System.Drawing.Size(128, 17);
             this.cbZScores.TabIndex = 7;
@@ -212,11 +213,22 @@
             this.textBox2.TabIndex = 14;
             this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
             // 
+            // cbThirds
+            // 
+            this.cbThirds.AutoSize = true;
+            this.cbThirds.Location = new System.Drawing.Point(262, 85);
+            this.cbThirds.Name = "cbThirds";
+            this.cbThirds.Size = new System.Drawing.Size(118, 17);
+            this.cbThirds.TabIndex = 15;
+            this.cbThirds.Text = "Append Item Thirds";
+            this.cbThirds.UseVisualStyleBackColor = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(901, 485);
+            this.Controls.Add(this.cbThirds);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.cmdExit);
             this.Controls.Add(this.cbPerformMatter);
@@ -258,6 +270,7 @@
 		private System.Windows.Forms.CheckBox cbPerformMatter;
 		private System.Windows.Forms.Button cmdExit;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.CheckBox cbThirds;
 	}
 }
 

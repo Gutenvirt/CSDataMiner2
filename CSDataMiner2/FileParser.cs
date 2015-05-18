@@ -63,7 +63,7 @@ namespace CSDataMiner2
 				break;
 			}
 
-			TestName = InpData.Rows [0].ItemArray [6].ToString ();
+			TestName = InpData.Rows [0].ItemArray [6].ToString ().Replace (",", "").Replace (":","");
 
 			//Depending on the options, listwise deletions must be completed first since it changes the size of the datatable and
 			//ultimately the bounds of the CHOCIE and BINARY 2D array created later.
@@ -151,9 +151,7 @@ namespace CSDataMiner2
 			StatusReport += "Item types are guessed from available data, gridded response and constructed response may be incorrectly marked.";
 			if (GlobalSettings.ReplaceCR)
 				CRAverages = ConvertConstructedResponse ();
-
 		}
-
 
 		public double[] ConvertConstructedResponse ()
 		{
@@ -167,7 +165,7 @@ namespace CSDataMiner2
 						continue;
 					result [i] += double.Parse (s);
 				}
-				result [i] = Math.Round (result [i] / ChoiceData.GetLength (1), 2);
+				result [i] = result [i] / ChoiceData.GetLength (1);
 				for (int j = 0; j < ChoiceData.GetLength (1); j++) {
 					string s = ChoiceData [i, j].Replace ("+", "");
 					if (s == NullValue)

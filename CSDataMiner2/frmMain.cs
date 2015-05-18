@@ -95,7 +95,21 @@ namespace CSDataMiner2
 
         private void cmdBatch_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "Doh!";
+            fBD.ShowDialog ();
+            if (fBD.SelectedPath !=null)
+            {
+                int x = 1;
+                foreach (string file in Directory.GetFiles (fBD.SelectedPath ,"*.xlsx"))
+                {
+                    SetupChoices();
+                    textBox1.Text = "working..." + x + " of " + Directory.GetFiles(fBD.SelectedPath, "*.xlsx").GetLength(0); 
+                    test = new Assessment(file);
+                    textBox1.Text += Environment.NewLine + file.Substring(0, file.LastIndexOf("\\") + 1) + test.testName.Replace(" ", "_") + ".csv"; 
+                    if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(file.Substring(0, file.LastIndexOf("\\") + 1) + test.testName.Replace(" ", "_") + ".csv", test.fileParser.BinaryData); }
+                    x++;
+                    Application.DoEvents();
+                }
+            }
         }
 
         private void cmdExit_Click(object sender, EventArgs e)

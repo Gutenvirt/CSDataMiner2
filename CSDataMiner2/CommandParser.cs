@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 namespace CSDataMiner2
 {
 
+    //Reserved for commandline interface 
+
     public static class CommandParser
     {
 

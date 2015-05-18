@@ -26,11 +26,11 @@ namespace CSDataMiner2
     public static class FileIO
     {
 
-        public static void WriteCSV(string filename, byte[,] data)
+        public static void WriteCSV(string testname, byte[,] data)
         {
-            if (filename != null)
+            if (testname != null)
             {
-                filename = filename.Replace(".xlsx", ".csv");
+                testname = testname.Replace(" ", "_")+".csv";
             }
             else { return; }
 
@@ -55,8 +55,7 @@ namespace CSDataMiner2
                     }
                 }
             }
-
-            System.IO.File.WriteAllLines(filename, strBuffer);
+            System.IO.File.WriteAllLines(testname, strBuffer);
         }
 
     }
