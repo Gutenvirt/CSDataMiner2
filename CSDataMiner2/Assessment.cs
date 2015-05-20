@@ -167,7 +167,7 @@ namespace CSDataMiner2
         public string HTMLOut()
         {
             var strHTML = new StringBuilder();
-            double recTL = 1 / testLength;
+            double recTL = 1.0 / (double)testLength;
             int _tableWidth = 660;
             int _gDivHeight = 250;
             int _gDivWidth = 515;
