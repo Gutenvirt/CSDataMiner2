@@ -204,7 +204,7 @@ namespace CSDataMiner2
             strHTML.Append("</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + testName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>");
 
             strHTML.Append("</table><p></p><table>");
-            strHTML.Append("<tr><th colspan=\"2\">Raw Score</th><th colspan=\"8\">Percent Score Distribution</th></tr>");
+            strHTML.Append("<tr><th colspan=\"2\">Statistics</th><th colspan=\"8\">Percent Score Distribution</th></tr>");
 
             if (testLength < 3)
                 strHTML.Append("<tr><td>Items</td><td class=\"warning\">" + testLength + "</td>");
@@ -241,14 +241,16 @@ namespace CSDataMiner2
             else
                 strHTML.Append("<tr><td>Students</td><td>" + studentLength + "</td></tr>");
 
-            strHTML.Append("<tr><td>Min</td><td>" + studentRawScores.Min() + "</td></tr>");
-            strHTML.Append("<tr><td>Q1</td><td>" + testStatistics[1] + "</td></tr>");
-            strHTML.Append("<tr><td>Mean</td><td>" + testMean.ToString("0.00") + "</td></tr>");
-            strHTML.Append("<tr><td>Median</td><td>" + testStatistics[3] + "</td></tr>");
-            strHTML.Append("<tr><td>Q3</td><td>" + testStatistics[4] + "</td></tr>");
-            strHTML.Append("<tr><td>Max</td><td>" + studentRawScores.Max() + "</td></tr>");
-            strHTML.Append("<tr><td>Std Dev</td><td>" + testStdDev.ToString("0.00") + "</td></tr>");
+            double divFactor = 1.0 / testLength;
 
+            strHTML.Append("<tr><td>Min</td><td>" + (studentRawScores.Min() * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Q1</td><td>" + (testStatistics[1] * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Mean</td><td>" + (testMean * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Median</td><td>" + (testStatistics[3] * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Q3</td><td>" + (testStatistics[4] * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Max</td><td>" + (studentRawScores.Max() * divFactor).ToString("P1") + "</td></tr>");
+            strHTML.Append("<tr><td>Std Dev</td><td>" + (testStdDev * divFactor*100).ToString("0.00") + "</td></tr>");
+            strHTML.Append("<tr><td>SEM</td><td>" + (testSEM * divFactor*100).ToString("0.00") + "</td></tr>");
             if (testSkew > 0)
                 strHTML.Append("<tr><td>Skew</td><td>&#8592; " + testSkew.ToString("0.00") + "</td></tr>");
             else
@@ -257,7 +259,6 @@ namespace CSDataMiner2
                 strHTML.Append("<tr><td>Alpha</td><td class=\"warning\">" + testAlpha.ToString("0.00") + "</td></tr>");
             else
                 strHTML.Append("<tr><td>Alpha</td><td>" + testAlpha.ToString("0.00") + "</td></tr>");
-            strHTML.Append("<tr><td>SEM</td><td>" + testSEM.ToString("0.00") + "</td></tr>");
 
             //Notes section
             if (fileParser.NumberDroppedStudents > 0)
@@ -278,19 +279,19 @@ namespace CSDataMiner2
                     "<th colspan=\"1\">% of Items</th></tr>");
 
             strHTML.Append("<tr><td colspan=\"4\" class=\"left\">Easy (Higher than 70%)</td>" +
-                "<td>" + ItemDifficulty[2] * 100 + "</td>" +
+                "<td>" + (ItemDifficulty[2] * 100).ToString ("0.0") + "</td>" +
                 "<td colspan=\"4\" class=\"left\">Good (Higher than 0.3)</td>" +
-                "<td colspan=\"1\">" + ItemDiscrimination[2] * 100 + "</td></tr>");
+                "<td colspan=\"1\">" + (ItemDiscrimination[2] * 100).ToString ("0.0") + "</td></tr>");
 
             strHTML.Append("<tr><td colspan=\"4\" class=\"left\">Moderate (40% to 70%)</td>" +
-                "<td>" + ItemDifficulty[1] * 100 + "</td>" +
+                "<td>" + (ItemDifficulty[1] * 100).ToString ("0.0") + "</td>" +
                 "<td colspan=\"4\" class=\"left\">Acceptable (0.2 to 0.3)</td>" +
-                "<td colspan=\"1\">" + ItemDiscrimination[1] * 100 + "</td></tr>");
+                "<td colspan=\"1\">" + (ItemDiscrimination[1] * 100).ToString ("0.0") + "</td></tr>");
 
             strHTML.Append("<tr><td colspan=\"4\" class=\"left\">Hard (Less than 40%)</td>" +
-                "<td>" + ItemDifficulty[0] * 100 + "</td>" +
+                "<td>" + (ItemDifficulty[0] * 100).ToString ("0.0") + "</td>" +
                 "<td colspan=\"4\" class=\"left\">Needs Review (Less than 0.2)</td>" +
-                "<td colspan=\"1\">" + ItemDiscrimination[0] * 100 + "</td></tr>");
+                "<td colspan=\"1\">" + (ItemDiscrimination[0] * 100).ToString ("0.0") + "</td></tr>");
 
             strHTML.Append("</table><p></p>");
 
