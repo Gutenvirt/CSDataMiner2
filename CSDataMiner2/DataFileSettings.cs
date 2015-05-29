@@ -23,7 +23,7 @@ namespace CSDataMiner2
 {
 	//This is a data container becuase there needs to be a place to house locations within the datafile itself.
 
-	public class DataFileSettings
+	sealed public class DataFileSettings
 	{
 		public int FirstDataRow { get; set; }
 

@@ -26,13 +26,14 @@ using System.IO;
 
 namespace CSDataMiner2
 {
-	class FileLoader
+	sealed public class FileLoader
 	{
 		public DataTable RawData = new DataTable (Guid.NewGuid ().ToString ());
 		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
 
 		public string ErrorString { get; set; }
         public string File { get; set; }
+        public string WorkingDirectory { get; set; }
 
 		public FileLoader (string dbFilename)
 		{
@@ -47,13 +48,14 @@ namespace CSDataMiner2
 				ErrorString = e.ToString ();
 			}
             File = dbFilename;
+            WorkingDirectory = dbFilename.Substring(0, dbFilename.LastIndexOf('\\'));
         }
+
 	}
 
 	enum Source
 	{
 		Eduphoria,
 		PinellasPerformanceMatters
-
 	}
 }

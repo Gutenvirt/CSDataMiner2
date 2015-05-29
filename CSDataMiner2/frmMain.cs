@@ -76,7 +76,7 @@ namespace CSDataMiner2
             else { GlobalSettings.GenerateReferences = false; }
 
             if (cbZScores.Checked)
-                GlobalSettings.GenerateZScores  = true;
+                GlobalSettings.GenerateZScores = true;
             else { GlobalSettings.GenerateZScores = false; }
         }
 
@@ -87,25 +87,28 @@ namespace CSDataMiner2
             {
                 SetupChoices();
                 test = new Assessment(oFD.FileName);
-                textBox1.Text = test.Output;
-                if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(oFD.FileName, test.fileParser.BinaryData); }
+                textBox1.Text = FileIO.DiagnosticOutput (test);
+                if (GlobalSettings.GenerateCSV) {FileIO.WriteCSV(test);}
+                if (GlobalSettings.GenerateHTML) {FileIO.HTMLOut (test);}
             }
             else { textBox1.Text += "ERROR: Bad file...\n"; }
         }
 
         private void cmdBatch_Click(object sender, EventArgs e)
         {
-            fBD.ShowDialog ();
-            if (fBD.SelectedPath !=null)
+            fBD.ShowDialog();
+            if (fBD.SelectedPath != null)
             {
+                SetupChoices();
+
                 int x = 1;
-                foreach (string file in Directory.GetFiles (fBD.SelectedPath ,"*.xlsx"))
+                foreach (string file in Directory.GetFiles(fBD.SelectedPath, "*.xlsx"))
                 {
-                    SetupChoices();
-                    textBox1.Text = "working..." + x + " of " + Directory.GetFiles(fBD.SelectedPath, "*.xlsx").GetLength(0); 
                     test = new Assessment(file);
-                    textBox1.Text += Environment.NewLine + file.Substring(0, file.LastIndexOf("\\") + 1) + test.testName.Replace(" ", "_") + ".csv"; 
-                    if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(file.Substring(0, file.LastIndexOf("\\") + 1) + test.testName.Replace(" ", "_") + ".csv", test.fileParser.BinaryData); }
+                    textBox1.Text = "File " + x + " of " + Directory.GetFiles(fBD.SelectedPath).GetLength(0);
+                    textBox1.Text = FileIO.DiagnosticOutput(test);
+                    if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(test); }
+                    if (GlobalSettings.GenerateHTML) { FileIO.HTMLOut(test); }
                     x++;
                     Application.DoEvents();
                 }
@@ -140,16 +143,16 @@ namespace CSDataMiner2
 
         private void textBox2_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Return )
+            if (e.KeyCode == Keys.Return)
             {
                 textBox2.Text = textBox2.Text.ToLower();
-                string[] cmd = textBox2.Text.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+                string[] cmd = textBox2.Text.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                 textBox2.Text = "";
-                
+
                 for (int i = 0; i < cmd.GetLength(0); i++)
                 {
                     string _c = cmd[0];
-                    
+
                     switch (_c)
                     {
                         case "hist":
