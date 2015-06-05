@@ -1,5 +1,5 @@
 //
-//  DataAnalyzer.cs
+//  BinDataOps.cs
 //
 //  Author:
 //       Christopher Stefancik <gutenvirt@gmail.com>
@@ -98,7 +98,8 @@ namespace CSDataMiner2
 
 		public static double[] GetDescriptiveStats (double[] scores)
 		{
-			Array.Sort (scores);
+            if (scores.Length < 5) { return new double[] { 0, 0, 0, 0, 0, 0 }; }
+            Array.Sort (scores);
 			int size = scores.GetLength (0);
 
 			return new double[6] {

@@ -1,5 +1,5 @@
 //
-//  DataParser.cs
+//  FileParser.cs
 //
 //  Author:
 //       Christopher Stefancik <gutenvirt@gmail.com>
@@ -21,6 +21,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics;
 
 namespace CSDataMiner2
 {
@@ -48,6 +49,85 @@ namespace CSDataMiner2
 
         public DataFileSettings dfLoc = new DataFileSettings(5, 6, 5);
         //General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
+
+        public FileParser(string[] InpData)
+        {
+            int NumberOfFields = 9;
+
+            char delimit = '\t';
+            TestName = InpData[0].Split(delimit)[1];
+
+            if (TestName.IndexOf('/') > -1) { TestName = TestName.Replace("/", string.Empty); }
+            if (TestName.IndexOf(':') > -1) { TestName = TestName.Replace(":", string.Empty); }
+            if (TestName.IndexOf('?') > -1) { TestName = TestName.Replace("?", string.Empty); }
+            if (TestName.IndexOf('!') > -1) { TestName = TestName.Replace("!", string.Empty); }
+            if (TestName.IndexOf(',') > -1) { TestName = TestName.Replace(",", string.Empty); }
+            if (TestName.IndexOf(';') > -1) { TestName = TestName.Replace(";", string.Empty); }
+            TestName = TestName.Replace("*", "(V1 Test)");
+
+            //1 subject
+            //2 school year
+            int nVars = int.Parse(InpData[3].Split(delimit)[1]);
+            string[] tmpItemType = InpData[4].Split(delimit);
+            //5 max points possible
+            string[] tmpStndards = InpData[6].Split(delimit);
+            string[] tmpAnswers = InpData[7].Split(delimit);
+            //8 headings
+
+            int nObs = InpData.GetLength(0) - NumberOfFields;
+
+            AnswerKey = new string[nVars];
+            Array.Copy(tmpAnswers, 1, AnswerKey, 0, nVars);
+
+            ItemType = new string[nVars];
+            Array.Copy(tmpItemType, 1, ItemType, 0, nVars);
+
+            Standards = new string[nVars];
+            Array.Copy(tmpStndards, 1, Standards, 0, nVars);
+
+            ChoiceData = new string[nVars, nObs];
+            BinaryData = new byte[nVars, nObs];
+
+
+            for (int i = NumberOfFields; i < InpData.GetLength(0); i++)
+            {
+                string[] strBuffer = InpData[i].Split(new char[] { delimit }, StringSplitOptions.None);
+                for (int j = 1; j < nVars + 1; j++)
+                {
+                    ChoiceData[j - 1, i - NumberOfFields] = strBuffer[j];
+                    if (strBuffer[j] == string.Empty | strBuffer[j] == null)
+                    {
+                        ChoiceData[j - 1, i - NumberOfFields] = NullValue;
+                        BinaryData[j - 1, i - NumberOfFields] = GlobalSettings.DeleteOption == MethodOfDelete.ZeroReplace ? (byte)0 : (byte)255;
+                    }
+                    else
+                    {
+                        BinaryData[j - 1, i - NumberOfFields] = strBuffer[j] == AnswerKey[j - 1] ? (byte)1 : (byte)0;
+                    }
+                }
+            }
+
+            GlobalSettings.HasMC = false;
+            GlobalSettings.HasMS = false;
+            GlobalSettings.HasGR = false;
+            GlobalSettings.HasCR = false;
+
+            for (int i = 0; i < nVars; i++)
+            {
+                if (ItemType[i] == "MC")
+                    GlobalSettings.HasMC = true;
+                if (ItemType[i] == "MS")
+                    GlobalSettings.HasMS = true;
+                if (ItemType[i] == "GR")
+                    GlobalSettings.HasGR = true;
+                if (ItemType[i] == "CR")
+                    GlobalSettings.HasCR = true;
+            }
+            if (GlobalSettings.ReplaceCR)
+                CRAverages = ConvertConstructedResponse();
+        }
+
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         public FileParser(DataTable InpData)
         {
@@ -132,6 +212,7 @@ namespace CSDataMiner2
             ItemType = new string[AnswerKey.GetLength(0)];
 
             GlobalSettings.HasMC = false;
+            GlobalSettings.HasMS = false;
             GlobalSettings.HasGR = false;
             GlobalSettings.HasCR = false;
 
@@ -155,6 +236,8 @@ namespace CSDataMiner2
 
                 if (ItemType[i] == "MC")
                     GlobalSettings.HasMC = true;
+                if (ItemType[i] == "MS")
+                    GlobalSettings.HasMS = true;
                 if (ItemType[i] == "GR")
                     GlobalSettings.HasGR = true;
                 if (ItemType[i] == "CR")
@@ -175,7 +258,7 @@ namespace CSDataMiner2
                 for (int j = 0; j < ChoiceData.GetLength(1); j++)
                 {
                     string s = ChoiceData[i, j].Replace("+", "");
-                    if (s == NullValue)
+                    if (s == NullValue | s == string.Empty)
                         continue;
                     result[i] += double.Parse(s);
                 }
@@ -183,7 +266,7 @@ namespace CSDataMiner2
                 for (int j = 0; j < ChoiceData.GetLength(1); j++)
                 {
                     string s = ChoiceData[i, j].Replace("+", "");
-                    if (s == NullValue)
+                    if (s == NullValue | s == string.Empty)
                         continue;
                     BinaryData[i, j] = (byte)(double.Parse(s) >= result[i] ? 1 : 0);
                 }

@@ -38,9 +38,13 @@ namespace CSDataMiner2
 
         public static bool HasMC { get; set; }
 
+        public static bool HasMS { get; set; }
+
         public static bool HasGR { get; set; }
 
         public static bool HasCR { get; set; }
+
+        public static string FileFIlter { get; set; }
 
     }
 

@@ -31,7 +31,8 @@ namespace CSDataMiner2
         public string Output { get; set; }
 
         public FileParser fileParser;
-        public FileLoader fileLoader;
+        public LoadXLSX xlsxLoader;
+        public LoadTxt txtLoader;
 
         public string[] itemType;
         public string[] itemStandards;
@@ -46,6 +47,7 @@ namespace CSDataMiner2
 
         public int testLength;
         public int studentLength;
+        public int[] uniqueResponse;
 
         public double[] itemPvalues;
         public double testStdDev;
@@ -63,8 +65,17 @@ namespace CSDataMiner2
 
         public Assessment(string filename)
         {
-            fileLoader = new FileLoader(filename);
-            fileParser = new FileParser(fileLoader.RawData);    
+            if (filename.EndsWith(".dtxt"))
+            {
+                txtLoader =new LoadTxt (filename);
+                fileParser = new FileParser(txtLoader.strRawData);
+            }
+
+            if (filename.EndsWith (".xlsx"))
+            {
+                xlsxLoader = new LoadXLSX(filename);
+                fileParser = new FileParser(xlsxLoader.RawData); 
+            }
 
             //ListWise -> Removes the student from database if there is ANY omission found.
             //Pairwise -> (DEFAULT) Replaces any omission with NaN (not a number) but still allows present data to be analyzed.
@@ -79,6 +90,9 @@ namespace CSDataMiner2
 
             testLength = itemAnswers.GetLength(0);
             studentLength = studentRawScores.GetLength(0);
+
+            if (GlobalSettings.HasGR == true )
+                uniqueResponse = ChoiceDataOps.GetUniqueResponse(fileParser.ChoiceData, fileParser.ItemType); 
 
             itemPvalues = BinDataOps.GetPValues(fileParser.BinaryData);
             testStdDev = BinDataOps.GetStandardDeviation(fileParser.BinaryData);

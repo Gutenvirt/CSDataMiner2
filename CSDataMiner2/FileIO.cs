@@ -30,7 +30,8 @@ namespace CSDataMiner2
     {
         public static void WriteCSV(Assessment selTest)
         {
-            string[] strBuffer = new string[selTest.fileParser.BinaryData.GetLength(1)+1]; 
+
+            string[] strBuffer = new string[selTest.fileParser.BinaryData.GetLength(1) + 1];
 
             for (int i = 0; i < selTest.fileParser.BinaryData.GetLength(0); i++)
             {
@@ -47,21 +48,17 @@ namespace CSDataMiner2
                         strBuffer[j + 1] += i == selTest.fileParser.BinaryData.GetLength(0) - 1 ? selTest.fileParser.BinaryData[i, j].ToString() : selTest.fileParser.BinaryData[i, j].ToString() + ',';
                 }
             }
-            System.IO.File.WriteAllLines(selTest.fileLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName+".csv", strBuffer);
+            
+            if (selTest.xlsxLoader == null)
+                System.IO.File.WriteAllLines(selTest.txtLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName + ".csv", strBuffer);
+            else
+                System.IO.File.WriteAllLines(selTest.xlsxLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName + ".csv", strBuffer);
         }
 
         public static string DiagnosticOutput(Assessment selTest)
         {
             var sbOutput = new StringBuilder();
-
-            sbOutput.Append(selTest.fileParser.TestName + Environment.NewLine);
-            sbOutput.Append("No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine);
-            sbOutput.Append("──────────────────────────────────────────────────────────────────────────────" + Environment.NewLine);
-            for (int i = 0; i < selTest.fileParser.BinaryData.GetLength(0); i++)
-            {
-                sbOutput.Append((i + 1) +
-                    "\t" + selTest.itemType[i] + "\t" + selTest.itemStandards[i] + "\t\t" + selTest.itemAnswers[i] + "\t│" + selTest.itemPvalues[i].ToString("0.00") + "\t" + selTest.itemPBS[i].ToString("0.00") + "\t" + selTest.testAifD[i].ToString("0.00") + Environment.NewLine);
-            }
+            sbOutput.Append(selTest.fileParser.TestName + Environment.NewLine + Environment.NewLine);
 
             sbOutput.Append(Environment.NewLine + "Descriptive Statistics" + Environment.NewLine);
             sbOutput.Append("──────────────┬──────────" + Environment.NewLine);
@@ -81,32 +78,14 @@ namespace CSDataMiner2
             sbOutput.Append("──────────────┴──────────" + Environment.NewLine);
             sbOutput.Append(Environment.NewLine);
 
+            sbOutput.Append("No.\tType\tStandard\t\tAnswer\tPValue\t\tPBS\tAifD" + Environment.NewLine);
+            sbOutput.Append("──────────────────────────────────────────────────────────────────────────────" + Environment.NewLine);
             for (int i = 0; i < selTest.fileParser.BinaryData.GetLength(0); i++)
             {
-                switch (selTest.itemType[i])
-                {
-                    case "MC":
-                        sbOutput.Append(selTest.MCFreq[i, 0].ToString("0.00") + "\t" + selTest.MCFreq[i, 1].ToString("0.00") + "\t" + selTest.MCFreq[i, 2].ToString("0.00") + "\t" + selTest.MCFreq[i, 3].ToString("0.00") + "\t" + selTest.MCFreq[i, 4].ToString("0.00") + Environment.NewLine);
-                        break;
-                    case "CR":
-                        sbOutput.Append(selTest.fileParser.CRAverages[i].ToString("0.00") + Environment.NewLine);
-                        break;
-                    case "GR":
-                        sbOutput.Append(selTest.fileParser.CRAverages[i].ToString("0.00") + Environment.NewLine);
-                        break;
-                }
+                sbOutput.Append((i + 1) +
+                    "\t" + selTest.itemType[i] + "\t" + selTest.itemStandards[i] + "\t\t" + selTest.itemAnswers[i] + "\t│" + selTest.itemPvalues[i].ToString("0.00") + "\t" + selTest.itemPBS[i].ToString("0.00") + "\t" + selTest.testAifD[i].ToString("0.00") + Environment.NewLine);
             }
-
-            sbOutput.Append(Environment.NewLine);
-            sbOutput.Append("Histogram" + Environment.NewLine);
-
-            for (int i = 0; i < selTest.studentHistogram.GetLength(0); i++)
-            {
-                sbOutput.Append(i * 10 + "-" + (i + 1) * 10 + " :" + selTest.studentHistogram[i].ToString("0.00") + Environment.NewLine);
-            }
-
             return sbOutput.ToString();
-
         }
 
         public static void HTMLOut(Assessment selTest)
@@ -147,7 +126,7 @@ namespace CSDataMiner2
 
             strHTML.Append("</STYLE>");
 
-            strHTML.Append("</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + selTest.fileParser.TestName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + "USERNAME" + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>");
+            strHTML.Append("</HEAD><BODY><TABLE><tr><th colspan=\"6\"><p>" + selTest.fileParser.TestName + "</p></th><th colspan=\"4\"><p>Test Analysis Report</p></th></tr><tr><td class=\"center\" colspan=\"3\">Date: " + DateTime.Today + "</td><td class=\"center\" colspan=\"3\">User: " + Environment.UserName  + "</td><td class=\"center\" colspan=\"4\">CDS 2015</td></tr>");
 
             strHTML.Append("</table><p></p><table>");
             strHTML.Append("<tr><th colspan=\"2\">Statistics</th><th colspan=\"8\">Percent Score Distribution</th></tr>");
@@ -207,12 +186,12 @@ namespace CSDataMiner2
                 strHTML.Append("<tr><td>Alpha</td><td>" + selTest.testAlpha.ToString("0.00") + "</td></tr>");
 
             //Notes section
-            if (selTest.fileParser.NumberDroppedStudents > 0)
+            
+            if (GlobalSettings.HasCR ==true && GlobalSettings.ReplaceCR==true)
             {
                 strHTML.Append("<tr><td class=\"left\" colspan=\"11\">");
-                strHTML.Append("Note: Some students (" + selTest.fileParser.NumberDroppedStudents + " total) were dropped because of complete test omission or an error in the data record; consider rescoring the test and re-running this analysis tool.");
+                strHTML.Append("Note: Constructed response questions were converted a score of 0 or 1.");
             }
-
             strHTML.Append("</table><p></p>");
 
             //Test Design Section
@@ -251,7 +230,41 @@ namespace CSDataMiner2
 
                 for (int i = 0; i < selTest.testLength; i++)
                 {
-                    if (selTest.itemType[i] == "MC" | selTest.itemType[i] == "MS")
+                    if (selTest.itemType[i] == "MC")
+                    {
+                        strHTML.Append("<tr>");
+                        strHTML.Append("<td>" + (i + 1) + " " + selTest.itemType[i] + "</td>");
+                        if (selTest.itemPvalues[i] < .2 | selTest.itemPvalues[i] > .9)
+                            strHTML.Append("<td class=\"warning\">" + selTest.itemPvalues[i].ToString("0.00") + "</td>");
+                        else
+                            strHTML.Append("<td>" + selTest.itemPvalues[i].ToString("0.00") + "</td>");
+                        if (selTest.itemPBS[i] < .2)
+                            strHTML.Append("<td class=\"warning\">" + selTest.itemPBS[i].ToString("0.00") + "</td>");
+                        else
+                            strHTML.Append("<td>" + selTest.itemPBS[i].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.testAifD[i].ToString("0.00") + "</td>");
+                        strHTML.Append("<td class=\"center\">" + selTest.itemAnswers[i] + "</td>");
+                        strHTML.Append("<td>" + selTest.MCFreq[i, 0].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.MCFreq[i, 1].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.MCFreq[i, 2].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.MCFreq[i, 3].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.MCFreq[i, 4].ToString("0.00") + "</td>");
+                        strHTML.Append("</tr>");
+                    }
+                }
+                strHTML.Append("</table>");
+                strHTML.Append("<p></p>");
+            }
+
+            //Multiple Choice
+            if (GlobalSettings.HasMS == true)
+            {
+                strHTML.Append("<table>");
+                strHTML.Append("<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>% C1</th><th>% C2</th><th>% C3</th><th>% C4</th><th>% Om</th></tr>");
+
+                for (int i = 0; i < selTest.testLength; i++)
+                {
+                    if (selTest.itemType[i] == "MS")
                     {
                         strHTML.Append("<tr>");
                         strHTML.Append("<td>" + (i + 1) + " " + selTest.itemType[i] + "</td>");
@@ -281,7 +294,7 @@ namespace CSDataMiner2
             if (GlobalSettings.HasGR == true)
             {
                 strHTML.Append("<table>");
-                strHTML.Append("<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>");
+                strHTML.Append("<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Num. Unique Answers</th><th>% Om</th></tr>");
 
                 for (int i = 0; i < selTest.testLength; i++)
                 {
@@ -298,11 +311,11 @@ namespace CSDataMiner2
                             strHTML.Append("<td class=\"warning\">" + selTest.itemPBS[i].ToString("0.00") + "</td>");
                         else
                             strHTML.Append("<td>" + selTest.itemPBS[i].ToString("0.00") + "</td>");
+
                         strHTML.Append("<td>" + selTest.testAifD[i].ToString("0.00") + "</td>");
                         strHTML.Append("<td class=\"center\">" + selTest.itemAnswers[i] + "</td>");
 
-                        strHTML.Append("<td>" + (100 - selTest.fileParser.CRAverages[i]).ToString("0.00") + "</td>"); //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                        strHTML.Append("<td>" + selTest.fileParser.CRAverages[i].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + selTest.uniqueResponse[i] + "</td>");
 
                         strHTML.Append("<td>" + selTest.MCFreq[i, 4].ToString("0.00") + "</td>");
                         strHTML.Append("</tr>");
@@ -315,7 +328,7 @@ namespace CSDataMiner2
             if (GlobalSettings.HasCR == true)
             {
                 strHTML.Append("<table>");
-                strHTML.Append("<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Answer</th><th>Percent Below</th><th>Percent Above</th><th>% Om</th></tr>");
+                strHTML.Append("<tr><th>Item</th><th>P-Value</th><th>PBS</th><th>Alpha IfD</th><th>Range</th><th>Mean Score</th><th>Percent Below Mean</th><th>% Om</th></tr>");
 
                 for (int i = 0; i < selTest.testLength; i++)
                 {
@@ -333,10 +346,10 @@ namespace CSDataMiner2
                         else
                             strHTML.Append("<td>" + selTest.itemPBS[i].ToString("0.00") + "</td>");
                         strHTML.Append("<td>" + selTest.testAifD[i].ToString("0.00") + "</td>");
-                        strHTML.Append("<td class=\"center\">" + selTest.itemAnswers[i] + "</td>");
+                        strHTML.Append("<td class=\"center\">" + selTest.fileParser.AnswerKey[i] + "</td>");
 
-                        strHTML.Append("<td>" + (100 - selTest.fileParser.CRAverages[i]).ToString("0.00") + "</td>"); //fix @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                         strHTML.Append("<td>" + selTest.fileParser.CRAverages[i].ToString("0.00") + "</td>");
+                        strHTML.Append("<td>" + (100 - selTest.itemPvalues[i] * 100).ToString("0.00") + "*</td>");
 
                         strHTML.Append("<td>" + selTest.MCFreq[i, 4].ToString("0.00") + "</td>");
                         strHTML.Append("</tr>");
@@ -366,7 +379,10 @@ namespace CSDataMiner2
 
             strHTML.Append("</HTML>");
 
-            File.WriteAllText(selTest.fileLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName.Trim()+".htm", strHTML.ToString());
+            if (selTest.xlsxLoader == null)
+                File.WriteAllText(selTest.txtLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName.Trim() + ".htm", strHTML.ToString());
+            else
+                File.WriteAllText(selTest.xlsxLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName.Trim() + ".htm", strHTML.ToString());
         }
     }
 }

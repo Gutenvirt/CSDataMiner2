@@ -1,5 +1,5 @@
 //
-//  DataConnection.cs
+//  FileLoader.cs
 //
 //  Author:
 //       Christopher Stefancik <gutenvirt@gmail.com>
@@ -26,16 +26,15 @@ using System.IO;
 
 namespace CSDataMiner2
 {
-	sealed public class FileLoader
+	sealed public class LoadXLSX
 	{
 		public DataTable RawData = new DataTable (Guid.NewGuid ().ToString ());
-		//Create a random table name, not required but makes it easier to handle datatables for later extensibility
 
 		public string ErrorString { get; set; }
-        public string File { get; set; }
+        public string FileName { get; set; }
         public string WorkingDirectory { get; set; }
 
-		public FileLoader (string dbFilename)
+        public LoadXLSX(string dbFilename)
 		{
 			try {
 				//IMEX=1 poses a problem, but there are little options available.  It treats all data pulled as a string, so extra parsing is needed later on.
@@ -47,15 +46,23 @@ namespace CSDataMiner2
 			} catch (IOException e) {
 				ErrorString = e.ToString ();
 			}
-            File = dbFilename;
+            FileName = dbFilename;
             WorkingDirectory = dbFilename.Substring(0, dbFilename.LastIndexOf('\\'));
         }
+    }
 
-	}
+    public sealed class LoadTxt
+    {
+        public string[] strRawData;
 
-	enum Source
-	{
-		Eduphoria,
-		PinellasPerformanceMatters
-	}
+        public string FileName { get; set; }
+        public string WorkingDirectory { get; set; }
+
+        public LoadTxt(string fFilename)
+        {
+            strRawData = File.ReadAllLines(fFilename);
+            FileName = fFilename;
+            WorkingDirectory = fFilename.Substring(0, fFilename.LastIndexOf('\\'));
+        }
+    }
 }

@@ -78,12 +78,16 @@ namespace CSDataMiner2
             if (cbZScores.Checked)
                 GlobalSettings.GenerateZScores = true;
             else { GlobalSettings.GenerateZScores = false; }
+
+            if (oFD.FileName.ToLower().EndsWith("*.xlsx"))
+                GlobalSettings.FileFIlter = "*.xlsx";
+            else { GlobalSettings.FileFIlter = "*.dtxt"; }
         }
 
         private void cmdSingle_Click(object sender, EventArgs e)
         {
             oFD.ShowDialog();
-            if (oFD.FileName != null && oFD.FileName.EndsWith (".xlsx"))
+            if (oFD.FileName != null && (oFD.FileName.EndsWith(".xlsx") | oFD.FileName.EndsWith(".dtxt")))
             {
                 SetupChoices();
                 test = new Assessment(oFD.FileName);
@@ -100,17 +104,22 @@ namespace CSDataMiner2
             if (fBD.SelectedPath != null)
             {
                 SetupChoices();
+                GlobalSettings.DeleteOption = MethodOfDelete.Pairwise;
+                rbPairWise.Checked = true;
 
                 int x = 1;
-                foreach (string file in Directory.GetFiles(fBD.SelectedPath, "*.xlsx"))
+                foreach (string file in Directory.GetFiles(fBD.SelectedPath, GlobalSettings.FileFIlter))
                 {
-                    test = new Assessment(file);
-                    textBox1.Text = "File " + x + " of " + Directory.GetFiles(fBD.SelectedPath).GetLength(0);
-                    textBox1.Text = FileIO.DiagnosticOutput(test);
-                    if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(test); }
-                    if (GlobalSettings.GenerateHTML) { FileIO.HTMLOut(test); }
-                    x++;
-                    Application.DoEvents();
+                    if (file.EndsWith(".xlsx") | file.EndsWith(".dtxt"))
+                    {
+                        test = new Assessment(file);
+                        textBox1.Text = "File " + x + " of " + Directory.GetFiles(fBD.SelectedPath).GetLength(0);
+                        textBox1.Text = FileIO.DiagnosticOutput(test);
+                        if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(test); }
+                        if (GlobalSettings.GenerateHTML) { FileIO.HTMLOut(test); }
+                        x++;
+                        Application.DoEvents();
+                    }
                 }
             }
         }

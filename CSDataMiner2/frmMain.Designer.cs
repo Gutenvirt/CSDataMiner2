@@ -40,8 +40,6 @@
             this.cbReferences = new System.Windows.Forms.CheckBox();
             this.cmdSingle = new System.Windows.Forms.Button();
             this.cmdBatch = new System.Windows.Forms.Button();
-            this.cbEduphoria = new System.Windows.Forms.CheckBox();
-            this.cbPerformMatter = new System.Windows.Forms.CheckBox();
             this.cmdExit = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.cbThirds = new System.Windows.Forms.CheckBox();
@@ -58,7 +56,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(877, 256);
+            this.textBox1.Size = new System.Drawing.Size(723, 256);
             this.textBox1.TabIndex = 0;
             // 
             // rbListWise
@@ -152,7 +150,7 @@
             // 
             // cmdSingle
             // 
-            this.cmdSingle.Location = new System.Drawing.Point(610, 14);
+            this.cmdSingle.Location = new System.Drawing.Point(481, 14);
             this.cmdSingle.Name = "cmdSingle";
             this.cmdSingle.Size = new System.Drawing.Size(118, 48);
             this.cmdSingle.TabIndex = 9;
@@ -162,7 +160,7 @@
             // 
             // cmdBatch
             // 
-            this.cmdBatch.Location = new System.Drawing.Point(610, 68);
+            this.cmdBatch.Location = new System.Drawing.Point(481, 77);
             this.cmdBatch.Name = "cmdBatch";
             this.cmdBatch.Size = new System.Drawing.Size(118, 48);
             this.cmdBatch.TabIndex = 10;
@@ -170,31 +168,9 @@
             this.cmdBatch.UseVisualStyleBackColor = true;
             this.cmdBatch.Click += new System.EventHandler(this.cmdBatch_Click);
             // 
-            // cbEduphoria
-            // 
-            this.cbEduphoria.AutoSize = true;
-            this.cbEduphoria.Checked = true;
-            this.cbEduphoria.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEduphoria.Location = new System.Drawing.Point(463, 14);
-            this.cbEduphoria.Name = "cbEduphoria";
-            this.cbEduphoria.Size = new System.Drawing.Size(111, 17);
-            this.cbEduphoria.TabIndex = 11;
-            this.cbEduphoria.Text = "Eduphoria Source";
-            this.cbEduphoria.UseVisualStyleBackColor = true;
-            // 
-            // cbPerformMatter
-            // 
-            this.cbPerformMatter.AutoSize = true;
-            this.cbPerformMatter.Location = new System.Drawing.Point(463, 36);
-            this.cbPerformMatter.Name = "cbPerformMatter";
-            this.cbPerformMatter.Size = new System.Drawing.Size(89, 17);
-            this.cbPerformMatter.TabIndex = 12;
-            this.cbPerformMatter.Text = "Other Source";
-            this.cbPerformMatter.UseVisualStyleBackColor = true;
-            // 
             // cmdExit
             // 
-            this.cmdExit.Location = new System.Drawing.Point(771, 15);
+            this.cmdExit.Location = new System.Drawing.Point(617, 14);
             this.cmdExit.Name = "cmdExit";
             this.cmdExit.Size = new System.Drawing.Size(118, 48);
             this.cmdExit.TabIndex = 13;
@@ -209,7 +185,7 @@
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox2.Size = new System.Drawing.Size(877, 66);
+            this.textBox2.Size = new System.Drawing.Size(723, 66);
             this.textBox2.TabIndex = 14;
             this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox2_KeyDown);
             // 
@@ -227,12 +203,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(901, 485);
+            this.ClientSize = new System.Drawing.Size(747, 485);
             this.Controls.Add(this.cbThirds);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.cmdExit);
-            this.Controls.Add(this.cbPerformMatter);
-            this.Controls.Add(this.cbEduphoria);
             this.Controls.Add(this.cmdBatch);
             this.Controls.Add(this.cmdSingle);
             this.Controls.Add(this.cbReferences);
@@ -265,9 +239,7 @@
 		private System.Windows.Forms.CheckBox cbZScores;
 		private System.Windows.Forms.CheckBox cbReferences;
 		private System.Windows.Forms.Button cmdSingle;
-		private System.Windows.Forms.Button cmdBatch;
-		private System.Windows.Forms.CheckBox cbEduphoria;
-		private System.Windows.Forms.CheckBox cbPerformMatter;
+        private System.Windows.Forms.Button cmdBatch;
 		private System.Windows.Forms.Button cmdExit;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.CheckBox cbThirds;
