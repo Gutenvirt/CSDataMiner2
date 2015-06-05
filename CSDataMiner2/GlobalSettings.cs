@@ -46,6 +46,8 @@ namespace CSDataMiner2
 
         public static string FileFIlter { get; set; }
 
+        public static bool GenZScores { get; set; }
+
     }
 
     public enum MethodOfDelete

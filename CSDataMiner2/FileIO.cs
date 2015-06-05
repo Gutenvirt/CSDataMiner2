@@ -30,7 +30,6 @@ namespace CSDataMiner2
     {
         public static void WriteCSV(Assessment selTest)
         {
-
             string[] strBuffer = new string[selTest.fileParser.BinaryData.GetLength(1) + 1];
 
             for (int i = 0; i < selTest.fileParser.BinaryData.GetLength(0); i++)
@@ -383,6 +382,21 @@ namespace CSDataMiner2
                 File.WriteAllText(selTest.txtLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName.Trim() + ".htm", strHTML.ToString());
             else
                 File.WriteAllText(selTest.xlsxLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName.Trim() + ".htm", strHTML.ToString());
+        }
+
+        public static void GenerateZScores(Assessment selTest)
+        {
+            string[] strBuffer = new string[selTest.fileParser.StudentZScore.GetLength(0)];
+
+            for (int i = 0; i < selTest.fileParser.StudentZScore.GetLength(0); i++)
+            {
+                strBuffer[i] = selTest.fileParser.StudentAlpha[i] + "," + selTest.fileParser.StudentZScore[i];
+            }
+
+            if (selTest.xlsxLoader == null)
+                System.IO.File.WriteAllLines(selTest.txtLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName + "-ZScore.csv", strBuffer);
+            else
+                System.IO.File.WriteAllLines(selTest.xlsxLoader.WorkingDirectory + '\\' + selTest.fileParser.TestName + "-ZScore.csv", strBuffer);
         }
     }
 }

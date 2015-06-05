@@ -131,6 +131,25 @@ namespace CSDataMiner2
 			return Math.Round (Math.Sqrt (variance / rawScores.GetLength (0)), Precision);
 		}
 
+        public static double[] GetZScore(double[] data)
+        {
+            var result = new double[data.GetLength(0)];
+            double variance = 0;
+            double testMean = Average(data);
+
+            for (int i = 0; i < data.GetLength(0); i++)
+            {
+                variance += Math.Pow(data[i] - testMean, 2);
+            }
+            double stddev = Math.Sqrt(variance / data.GetLength(0));
+
+            for (int i = 0; i < data.GetLength(0); i++)
+            {
+                result[i] = (data[i]-testMean )/stddev ;
+            }
+            return result;
+        }
+
 		public static double[] GetPValues (byte[,] data)
 		{
 			return GetPValues (-1, data);

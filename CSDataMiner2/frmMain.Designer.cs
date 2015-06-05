@@ -99,6 +99,7 @@
             this.bcConvertCR.AutoSize = true;
             this.bcConvertCR.Checked = true;
             this.bcConvertCR.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.bcConvertCR.Enabled = false;
             this.bcConvertCR.Location = new System.Drawing.Point(15, 95);
             this.bcConvertCR.Name = "bcConvertCR";
             this.bcConvertCR.Size = new System.Drawing.Size(146, 17);
@@ -137,6 +138,7 @@
             this.cbZScores.TabIndex = 7;
             this.cbZScores.Text = "Output Z-Scores CSV";
             this.cbZScores.UseVisualStyleBackColor = true;
+            this.cbZScores.CheckedChanged += new System.EventHandler(this.cbZScores_CheckedChanged);
             // 
             // cbReferences
             // 

@@ -47,6 +47,9 @@ namespace CSDataMiner2
 
         public string StatusReport { get; set; }
 
+        public string[] StudentAlpha { get; set; }
+        public double[] StudentZScore { get; set; }
+
         public DataFileSettings dfLoc = new DataFileSettings(5, 6, 5);
         //General to target datasource, FirstDataRow x FirstDataCol x LastDataCol offset
 
@@ -88,10 +91,18 @@ namespace CSDataMiner2
             ChoiceData = new string[nVars, nObs];
             BinaryData = new byte[nVars, nObs];
 
+            StudentZScore = new double[nObs];
+            StudentAlpha = new string[nObs];
+
 
             for (int i = NumberOfFields; i < InpData.GetLength(0); i++)
             {
                 string[] strBuffer = InpData[i].Split(new char[] { delimit }, StringSplitOptions.None);
+                if (GlobalSettings.GenerateZScores == true)
+                {
+                    StudentAlpha[i - NumberOfFields] = strBuffer[0];
+                    double.TryParse(strBuffer[102], out StudentZScore[i-NumberOfFields]);
+                }
                 for (int j = 1; j < nVars + 1; j++)
                 {
                     ChoiceData[j - 1, i - NumberOfFields] = strBuffer[j];
@@ -106,6 +117,9 @@ namespace CSDataMiner2
                     }
                 }
             }
+
+            if (GlobalSettings.GenerateZScores == true)
+                StudentZScore = BinDataOps.GetZScore (StudentZScore);
 
             GlobalSettings.HasMC = false;
             GlobalSettings.HasMS = false;

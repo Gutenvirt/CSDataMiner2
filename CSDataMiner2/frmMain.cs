@@ -94,6 +94,7 @@ namespace CSDataMiner2
                 textBox1.Text = FileIO.DiagnosticOutput (test);
                 if (GlobalSettings.GenerateCSV) {FileIO.WriteCSV(test);}
                 if (GlobalSettings.GenerateHTML) {FileIO.HTMLOut (test);}
+                if (GlobalSettings.GenerateZScores) { FileIO.GenerateZScores(test); }
             }
             else { textBox1.Text += "ERROR: Bad file...\n"; }
         }
@@ -117,6 +118,7 @@ namespace CSDataMiner2
                         textBox1.Text = FileIO.DiagnosticOutput(test);
                         if (GlobalSettings.GenerateCSV) { FileIO.WriteCSV(test); }
                         if (GlobalSettings.GenerateHTML) { FileIO.HTMLOut(test); }
+                        if (GlobalSettings.GenerateZScores) { FileIO.GenerateZScores(test); }
                         x++;
                         Application.DoEvents();
                     }
@@ -172,6 +174,11 @@ namespace CSDataMiner2
                     }
                 }
             }
+        }
+
+        private void cbZScores_CheckedChanged(object sender, EventArgs e)
+        {
+            GlobalSettings.GenerateZScores = true;
         }
     }
 }
