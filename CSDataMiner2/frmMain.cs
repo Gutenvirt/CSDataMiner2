@@ -38,23 +38,13 @@ namespace CSDataMiner2
         public void SetupChoices()
         {
             if (rbZeroReplace.Checked == true)
-            {
                 GlobalSettings.DeleteOption = MethodOfDelete.ZeroReplace;
-            }
             else
-            {
                 if (rbListWise.Checked == true)
-                {
                     GlobalSettings.DeleteOption = MethodOfDelete.Listwise;
-                }
                 else
-                {
                     if (rbPairWise.Checked == true)
-                    {
                         GlobalSettings.DeleteOption = MethodOfDelete.Pairwise;
-                    }
-                }
-            }
 
             if (bcConvertCR.Checked)
                 GlobalSettings.ReplaceCR = true;
